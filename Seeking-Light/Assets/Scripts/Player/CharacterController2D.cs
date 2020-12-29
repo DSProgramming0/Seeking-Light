@@ -10,10 +10,10 @@ public class CharacterController2D : MonoBehaviour
 	[SerializeField] private LayerMask m_WhatIsGround;							// A mask determining what is ground to the character
 	[SerializeField] private Transform m_GroundCheck;							// A position marking where to check if the player is grounded.
 	[SerializeField] private Transform m_CeilingCheck;							// A position marking where to check for ceilings
-	[SerializeField] private Collider2D m_CrouchDisableCollider;				// A collider that will be disabled when crouching
+	[SerializeField] private Collider2D m_CrouchDisableCollider;                // A collider that will be disabled when crouching
 
-	const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
-	private bool m_Grounded;            // Whether or not the player is grounded.
+    const float k_GroundedRadius = 1.1f; // Radius of the overlap circle to determine if grounded
+    [SerializeField]	private bool m_Grounded;            // Whether or not the player is grounded.
 	const float k_CeilingRadius = .2f; // Radius of the overlap circle to determine if the player can stand up
 	private Rigidbody2D m_Rigidbody2D;
 	private bool m_FacingRight = true;  // For determining which way the player is currently facing.
@@ -29,6 +29,12 @@ public class CharacterController2D : MonoBehaviour
 
 	public BoolEvent OnCrouchEvent;
     [SerializeField] private bool m_wasCrouching = false;
+
+    [SerializeField] private float hangTime = .2f;
+    private float hangCounter;
+
+    [SerializeField] private float jumpBufferLength = .1f;
+    private float jumpBufferCount;
 
 	private void Awake()
 	{
@@ -76,7 +82,6 @@ public class CharacterController2D : MonoBehaviour
 		//only control the player if grounded or airControl is turned on
 		if (m_Grounded || m_AirControl)
 		{
-
 			// If crouching
 			if (crouch)
 			{
@@ -91,12 +96,12 @@ public class CharacterController2D : MonoBehaviour
 
 				// Disable one of the colliders when crouching
 				if (m_CrouchDisableCollider != null)
-					m_CrouchDisableCollider.enabled = false;
+					m_CrouchDisableCollider.isTrigger = true;
 			} else
 			{
 				// Enable the collider when not crouching
 				if (m_CrouchDisableCollider != null)
-					m_CrouchDisableCollider.enabled = true;
+					m_CrouchDisableCollider.isTrigger = false;
 
 				if (m_wasCrouching)
 				{
@@ -123,17 +128,52 @@ public class CharacterController2D : MonoBehaviour
 				Flip();
 			}
 		}
-		// If the player should jump...
-		if (m_Grounded && jump)
-		{
-			// Add a vertical force to the player.
-			m_Grounded = false;
-			m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
-		}
 	}
 
+    void Jump()
+    {
+        //Hangtime when jumping off edges of platforms
+        if(m_Grounded)
+        {
+            hangCounter = hangTime;
+        }
+        else
+        {
+            hangCounter -= Time.deltaTime;
+        }
 
-	private void Flip()
+        //Manager jump buffer
+        if (Input.GetButtonDown("Jump"))
+        {
+            jumpBufferCount = jumpBufferLength;
+        }
+        else
+        {
+            jumpBufferCount -= Time.deltaTime;
+        }
+
+        //Controllable jumps/ Hold to do a higher jump
+        // If the player should jump...
+        if (jumpBufferCount >= 0 && hangCounter > 0)
+        {
+            // Add a vertical force to the player.
+            m_Grounded = false;
+            m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, m_JumpForce);
+            jumpBufferCount = 0f;
+        }
+
+        if (Input.GetButtonUp("Jump") && m_Rigidbody2D.velocity.y > 0)
+        {
+            m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, m_Rigidbody2D.velocity.y * .5f);
+        }
+    }
+
+    void Update()
+    {
+        Jump();
+    }
+
+    private void Flip()
 	{
 		// Switch the way the player is labelled as facing.
 		m_FacingRight = !m_FacingRight;
@@ -148,4 +188,9 @@ public class CharacterController2D : MonoBehaviour
     {
         transform.position = lastCheckpointHit.transform.position;
     }
+
+    //void OnDrawGizmos()
+    //{
+    //    Gizmos.DrawSphere(m_GroundCheck.position, k_GroundedRadius);
+    //}
 }

@@ -22,6 +22,8 @@ public class UITweener : MonoBehaviour
 
     public void startFade()
     {
+        Debug.Log("Called");
+
         StartCoroutine(Blackout());
     }
 

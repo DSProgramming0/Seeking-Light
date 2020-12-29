@@ -9,25 +9,28 @@ public class PlayerMovement : MonoBehaviour
     private float horizontalMove = 0f;
 
     [SerializeField] private float currentSpeed;
-    [SerializeField] private float runSpeed = 80f;
-    [SerializeField] private float walkSpeed = 50f;
+    [SerializeField] private float runSpeed;
+    [SerializeField] private float walkSpeed;
 
     private bool jump = false;
     private bool crouch = false;
 
     void Start()
     {
-        currentSpeed = runSpeed;
     }
 
     void Update()
     {
         horizontalMove = Input.GetAxisRaw("Horizontal") * currentSpeed;
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButton("Sprint"))
         {
-            jump = true;
+            currentSpeed = runSpeed;
         }
+        else
+        {
+            currentSpeed = walkSpeed;
+        }      
 
         if (Input.GetButtonDown("Crouch"))
         {
