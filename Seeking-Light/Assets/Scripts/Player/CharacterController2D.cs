@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections;
 
 public class CharacterController2D : MonoBehaviour
 {
 	[SerializeField] private float m_JumpForce = 400f;							// Amount of force added when the player jumps.
-	[Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;			// Amount of maxSpeed applied to crouching movement. 1 = 100%
+	[Range(0, 1)] [SerializeField] private float m_CrouchSpeed = 4F;			// Amount of maxSpeed applied to crouching movement. 1 = 100%
 	[Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;	// How much to smooth out the movement
 	[SerializeField] private bool m_AirControl = false;							// Whether or not a player can steer while jumping;
 	[SerializeField] private LayerMask m_WhatIsGround;							// A mask determining what is ground to the character
@@ -16,7 +17,7 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField]	private bool m_Grounded;            // Whether or not the player is grounded.
 	const float k_CeilingRadius = .2f; // Radius of the overlap circle to determine if the player can stand up
 	private Rigidbody2D m_Rigidbody2D;
-	private bool m_FacingRight = true;  // For determining which way the player is currently facing.
+    [SerializeField] private bool m_FacingRight = true;  // For determining which way the player is currently facing.
 	private Vector3 m_Velocity = Vector3.zero;
 
 	[Header("Events")]
@@ -36,6 +37,8 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private float jumpBufferLength = .1f;
     private float jumpBufferCount;
 
+    private bool updateDirection = false;
+
 	private void Awake()
 	{
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
@@ -47,7 +50,12 @@ public class CharacterController2D : MonoBehaviour
 			OnCrouchEvent = new BoolEvent();
 	}
 
-	private void FixedUpdate()
+    private void Start()
+    {
+        StartCoroutine(waitToUpdateDirection());
+    }
+
+    private void FixedUpdate()
 	{
 		bool wasGrounded = m_Grounded;
 		m_Grounded = false;
@@ -64,13 +72,18 @@ public class CharacterController2D : MonoBehaviour
 					OnLandEvent.Invoke();
 			}
 		}
-	}
+    }
 
 
-	public void Move(float move, bool crouch, bool jump)
+    public void Move(float move, bool crouch, bool jump)
 	{
-		// If crouching, check to see if the character can stand up
-		if (!crouch)
+        if(updateDirection == true)
+        {
+            PlayerInfo.instance.FacingRight = m_FacingRight;
+        }
+
+        // If crouching, check to see if the character can stand up
+        if (!crouch)
 		{
 			// If the character has a ceiling preventing them from standing up, keep them crouching
 			if (Physics2D.OverlapCircle(m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround))
@@ -115,18 +128,21 @@ public class CharacterController2D : MonoBehaviour
 			// And then smoothing it out and applying it to the character
 			m_Rigidbody2D.velocity = Vector3.SmoothDamp(m_Rigidbody2D.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
 
-			// If the input is moving the player right and the player is facing left...
-			if (move > 0 && !m_FacingRight)
-			{
-				// ... flip the player.
-				Flip();
-			}
-			// Otherwise if the input is moving the player left and the player is facing right...
-			else if (move < 0 && m_FacingRight)
-			{
-				// ... flip the player.
-				Flip();
-			}
+            if(PlayerStates.instance.currentPlayerInteractionState != PlayerInteractionStates.INTERACTING)
+            {
+                // If the input is moving the player right and the player is facing left...
+                if (move > 0 && !m_FacingRight)
+                {
+                    // ... flip the player.
+                    Flip();
+                }
+                // Otherwise if the input is moving the player left and the player is facing right...
+                else if (move < 0 && m_FacingRight)
+                {
+                    // ... flip the player.
+                    Flip();
+                }
+            }		
 		}
 	}
 
@@ -170,7 +186,10 @@ public class CharacterController2D : MonoBehaviour
 
     void Update()
     {
-        Jump();
+        if (PlayerStates.instance.currentPlayerInteractionState != PlayerInteractionStates.INTERACTING)
+        {
+            Jump();
+        }
     }
 
     private void Flip()
@@ -187,6 +206,15 @@ public class CharacterController2D : MonoBehaviour
     public void resetPlayerAtLastCheckpoint(Checkpoint lastCheckpointHit)
     {
         transform.position = lastCheckpointHit.transform.position;
+    }
+
+    private IEnumerator waitToUpdateDirection()
+    {
+        yield return new WaitForSeconds(2f);
+        updateDirection = true;
+
+        StopCoroutine(waitToUpdateDirection());
+
     }
 
     //void OnDrawGizmos()

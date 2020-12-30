@@ -32,7 +32,7 @@ public class UITweener : MonoBehaviour
         LeanTween.alphaCanvas(thisCanvasGroup, 0, 10 * Time.fixedDeltaTime);
     }
 
-    private IEnumerator Blackout()
+    private IEnumerator Blackout() //Fades screen to black
     {
         LeanTween.alphaCanvas(thisCanvasGroup, 1, 10 * Time.fixedDeltaTime);
         yield return new WaitForSeconds(duration);

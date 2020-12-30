@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
+    //Manages all UI components throughout game
     public static UIManager instance;
 
     [SerializeField] private CanvasGroup blackoutPanel;
