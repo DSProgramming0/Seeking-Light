@@ -9,6 +9,9 @@ public class PlayerInfo : MonoBehaviour
 
     private bool facingRight;
     private Vector2 dir;
+    private bool isClimbing;
+    private bool isCrouching;
+    private bool playerHasFlashlight = false;
     private Rigidbody2D thisRB;
 
     void Awake()
@@ -22,8 +25,26 @@ public class PlayerInfo : MonoBehaviour
     {
         get { return facingRight; }
         set { facingRight = value; }
-    }    
+    }
 
+    public bool IsClimbing
+    {
+        get { return isClimbing; }
+        set { isClimbing = value; }
+    }
+
+    public bool IsCrouching
+    {
+        get { return isCrouching; }
+        set { isCrouching = value; }
+    }
+
+    public bool PlayerHasFlashLight
+    {
+        get { return playerHasFlashlight; }
+        set { playerHasFlashlight = value; }
+    }
+    
     //returns player current direction based on player input
     public Vector2 Dir
     {

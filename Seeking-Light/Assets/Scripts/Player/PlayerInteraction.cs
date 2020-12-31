@@ -1,14 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class PlayerInteraction : MonoBehaviour
 {
+    [SerializeField] private AnimHook _animHook;
+
     [SerializeField] private Transform rayStartPoint;
     [SerializeField] private float rayDist = 1f;
 
     [SerializeField] private GameObject moveableObj; //The current moveableObject that the player has selected
     private Vector2 dir;
+
+    [Header("Player Flashlight")]
+    private bool playerHasFlashlight = false;
+    [SerializeField] private bool flashlightOn = false;
+    [SerializeField] private Light2D flashlight;
 
     void Update()
     {
@@ -65,7 +73,31 @@ public class PlayerInteraction : MonoBehaviour
         {
             hit.collider.GetComponent<Interact>().startInteraction(); //Call the interaction method on whatever type of interactable object it is
         }
+
+        if(PlayerInfo.instance.PlayerHasFlashLight == true)
+        {
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                toggleFlashLight();
+            }
+        }       
     }  
+
+    void toggleFlashLight()
+    {
+        if(flashlightOn == false)
+        {
+            flashlight.enabled = true;
+            flashlightOn = true;
+            _animHook.setPlayerFlashlight(flashlightOn);
+        }
+        else
+        {
+            flashlight.enabled = false;
+            flashlightOn = false;
+            _animHook.setPlayerFlashlight(flashlightOn);
+        }
+    }
 
     void OnDrawGizmos()
     {

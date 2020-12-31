@@ -6,6 +6,10 @@ public class Interact : MonoBehaviour
 {
     [SerializeField] private ThisInteractionIs thisInteraction;
 
+    #region DoorPuzzle
+    [SerializeField] private UITweener doorToOpen; 
+    #endregion
+
     public void startInteraction()
     {
         switch (thisInteraction)
@@ -14,15 +18,15 @@ public class Interact : MonoBehaviour
                 Debug.Log("Dialogue started");
                 break;
             case ThisInteractionIs.SWITCH:
-                Debug.Log("Switch used");
+                Debug.Log("switch pressed");
+
+                doorToOpen.toggleDoor();
                 break;
             default:
                 Debug.LogError("Interaction state not set!!");
                 break;
         }
-    }
-
-   
+    }  
 }
 
 public enum ThisInteractionIs

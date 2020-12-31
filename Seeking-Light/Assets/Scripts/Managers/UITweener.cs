@@ -10,6 +10,10 @@ public class UITweener : MonoBehaviour
     public float duration;
     public float delay;
 
+[Header("Door Puzzle")]
+    [SerializeField] private float doorLocalX;
+    [SerializeField] private float doorScaleY;
+
     public void showUI()
     {
         LeanTween.scale(gameObject, new Vector3(1, 1, 1), duration).setDelay(delay).setEase(inType);
@@ -40,4 +44,10 @@ public class UITweener : MonoBehaviour
 
         StopCoroutine(Blackout());
     }
+
+    public void toggleDoor()
+    {
+        LeanTween.scaleY(this.gameObject, 0.5f, duration).setDelay(delay).setEase(inType);
+        LeanTween.moveLocalX(this.gameObject, 0, duration);
+    }   
 }

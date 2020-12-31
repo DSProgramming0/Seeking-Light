@@ -24,14 +24,20 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+
+       
+    }
+
+    private void MovementInput()
+    {
         horizontalMove = Input.GetAxisRaw("Horizontal");
         dir = new Vector2(horizontalMove, 0);
         PlayerInfo.instance.Dir = dir;
         horizontalMove = horizontalMove * currentSpeed;
-        
+
         if (Input.GetButton("Sprint")) //If player holds the sprint buttong, increase speed to the run speed amount
         {
-            float newSpeed = Mathf.Lerp(currentSpeed, runSpeed, sprintSpeedGain  * Time.deltaTime);
+            float newSpeed = Mathf.Lerp(currentSpeed, runSpeed, sprintSpeedGain * Time.deltaTime);
             currentSpeed = newSpeed;
         }
         else if (!Input.GetButton("Sprint") && dir.magnitude != 0) //decrease or increase speed to walk speed amount over time.
@@ -40,24 +46,24 @@ public class PlayerMovement : MonoBehaviour
             currentSpeed = newSpeed;
         }
 
-        if(dir.magnitude == 0) //If palyer is still, drop to idle speed
+        if (dir.magnitude == 0) //If palyer is still, drop to idle speed
         {
             float newSpeed = Mathf.Lerp(currentSpeed, 0, idleSpeedDrop * Time.deltaTime);
             currentSpeed = newSpeed;
 
-            if(currentSpeed <= 0)
+            if (currentSpeed <= 0)
             {
                 currentSpeed = 0;
             }
         }
 
-        thisAnim.setAnim(currentSpeed); //Accesses animator and sets correct values for parameters
+        thisAnim.setPlayerSpeed(currentSpeed); //Accesses animator and sets correct values for parameters
 
         if (Input.GetButtonDown("Crouch"))
         {
             crouch = true;
         }
-        else if( Input.GetButtonUp("Crouch"))
+        else if (Input.GetButtonUp("Crouch"))
         {
             crouch = false;
         }

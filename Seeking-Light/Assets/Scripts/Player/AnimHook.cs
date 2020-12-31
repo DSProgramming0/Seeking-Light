@@ -8,8 +8,18 @@ public class AnimHook : MonoBehaviour
 
     [SerializeField] private Animator thisAnimator;
 
-    public void setAnim(float _speed)
+    public void setPlayerSpeed(float _speed)
     {
         thisAnimator.SetFloat("Speed", _speed);
+    }
+
+    public void setDoorState(bool _bool)
+    {
+        thisAnimator.SetBool("DoorState", _bool);
+    }
+
+    public void setPlayerFlashlight(bool _flashlightOn)
+    {
+        thisAnimator.SetBool("FlashlightActive", _flashlightOn);
     }
 }
