@@ -40,11 +40,26 @@ public class GameEvents : MonoBehaviour
             Debug.LogError(onLightFlicker1 + "Has no suscribers!");
         }
     }
+
+    public event Action onLightFlicker2;
+    public void LightFlicker2()
+    {
+        if (onLightFlicker2 != null)
+        {
+            onLightFlicker2();
+        }
+        else
+        {
+            Debug.LogError(onLightFlicker1 + "Has no suscribers!");
+        }
+    }
+
 }
 
 public enum EventList
 {
     BIN_KNOCKOVER_1,
 
-    LIGHTFLICKER_1
+    LIGHTFLICKER_1,
+    LIGHTFLICKER_2,
 }

@@ -24,7 +24,9 @@ public class EventTrigger : MonoBehaviour
                         break;
                     case EventList.LIGHTFLICKER_1:
                         GameEvents.instance.LightFlicker1();
-
+                        break;
+                    case EventList.LIGHTFLICKER_2:
+                        GameEvents.instance.LightFlicker2();
                         break;
                     default:
                         break;

@@ -12,11 +12,15 @@ public class EventAnimationManager : MonoBehaviour
 
     [Header("Lights")]
     [SerializeField] private GameObject light1;
+    [SerializeField] private GameObject light2;
+
 
     void Start() //Suscribe methods here
     {
         GameEvents.instance.onBinKnockover1 += bin1Knockover;
         GameEvents.instance.onLightFlicker1 += light1Flicker;
+        GameEvents.instance.onLightFlicker2 += light2Flicker;
+
     }
 
     private void bin1Knockover() 
@@ -35,7 +39,13 @@ public class EventAnimationManager : MonoBehaviour
         light1.GetComponent<Light2D>().enabled = true;
         light1.GetComponent<LightFlicker>().enabled = true;
         SoundManager.Play3DSound(SoundManager.Sound.LightFlicker1, true, false, 0f, .2f, light1.transform.position);
+    }
 
-        GameEvents.instance.onLightFlicker1 -= light1Flicker;
+    private void light2Flicker()
+    {
+        Debug.Log("Light is flickering");
+        light2.GetComponent<Light2D>().enabled = true;
+        light2.GetComponent<LightFlicker>().enabled = true;
+        SoundManager.Play3DSound(SoundManager.Sound.LightFlicker1, true, false, 0f, .2f, light2.transform.position);
     }
 }
