@@ -276,7 +276,7 @@ public class CharacterController2D : MonoBehaviour
         
         if(hitInfo.collider != null)
         {
-            Debug.Log("LadderDetected");
+            //Debug.Log("LadderDetected");
             if (Input.GetKeyDown(KeyCode.W))
             {
                 isClimbing = true;
