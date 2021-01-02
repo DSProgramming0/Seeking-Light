@@ -87,15 +87,19 @@ public class CharacterController2D : MonoBehaviour
 	{
 		bool wasGrounded = m_Grounded;
 		m_Grounded = false;
+        thisAnim.setJumpingState(true);
+        thisAnim.setGroundBool(m_Grounded);
 
-		// The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
-		// This can be done using layers instead but Sample Assets will not overwrite your project settings.
-		Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
+        // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
+        // This can be done using layers instead but Sample Assets will not overwrite your project settings.
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
 		for (int i = 0; i < colliders.Length; i++)
 		{
 			if (colliders[i].gameObject != gameObject)
 			{
 				m_Grounded = true;
+                thisAnim.setGroundBool(m_Grounded);
+                thisAnim.setJumpingState(false);
 				if (!wasGrounded)
 					OnLandEvent.Invoke();
 			}
@@ -178,33 +182,37 @@ public class CharacterController2D : MonoBehaviour
 		//only control the player if grounded or airControl is turned on
 		if (m_Grounded || m_AirControl)
 		{
-			// If crouching
-			if (crouch)
-			{
-				if (!m_wasCrouching)
-				{
-					m_wasCrouching = true;
-					OnCrouchEvent.Invoke(true);
-				}
+            if(PlayerStates.instance.currentPlayerInteractionState == PlayerInteractionStates.NOTINTERACTING)
+            {
+                // If crouching
+                if (crouch)
+                {
+                    if (!m_wasCrouching)
+                    {
+                        m_wasCrouching = true;
+                        OnCrouchEvent.Invoke(true);
+                    }
 
-				// Reduce the speed by the crouchSpeed multiplier
-				move *= m_CrouchSpeed;
+                    // Reduce the speed by the crouchSpeed multiplier
+                    move *= m_CrouchSpeed;
 
-				// Disable one of the colliders when crouching
-				if (m_CrouchDisableCollider != null)
-					m_CrouchDisableCollider.isTrigger = true;
-			} else
-			{
-				// Enable the collider when not crouching
-				if (m_CrouchDisableCollider != null)
-					m_CrouchDisableCollider.isTrigger = false;
+                    // Disable one of the colliders when crouching
+                    if (m_CrouchDisableCollider != null)
+                        m_CrouchDisableCollider.isTrigger = true;
+                }
+                else
+                {
+                    // Enable the collider when not crouching
+                    if (m_CrouchDisableCollider != null)
+                        m_CrouchDisableCollider.isTrigger = false;
 
-				if (m_wasCrouching)
-				{
-					m_wasCrouching = false;
-					OnCrouchEvent.Invoke(false);
-				}
-			}
+                    if (m_wasCrouching)
+                    {
+                        m_wasCrouching = false;
+                        OnCrouchEvent.Invoke(false);
+                    }
+                }
+            }			
 
 			// Move the character by finding the target velocity
 			Vector3 targetVelocity = new Vector2(move * 10f, rb.velocity.y);
@@ -259,6 +267,8 @@ public class CharacterController2D : MonoBehaviour
         {
             // Add a vertical force to the player.
             m_Grounded = false;
+            thisAnim.setTakeOffTrigger();
+
             rb.velocity = new Vector2(rb.velocity.x, m_JumpForce);
             jumpBufferCount = 0f;
         }

@@ -6,6 +6,8 @@ using UnityEngine.Experimental.Rendering.Universal;
 public class PlayerInteraction : MonoBehaviour
 {
     [SerializeField] private AnimHook _animHook;
+    private bool interactionTriggered = false;
+    [SerializeField] private BoxCollider2D m_disableCollider;
 
     [SerializeField] private Transform rayStartPoint;
     [SerializeField] private float rayDist = 1f;
@@ -53,7 +55,46 @@ public class PlayerInteraction : MonoBehaviour
             {
                 PlayerStates.instance.currentPushOrPullState = PushOrPullStates.PULLING;
             }
+
+            if (PlayerInfo.instance.FacingRight == true && dir.x == 0)
+            {
+                PlayerStates.instance.currentPushOrPullState = PushOrPullStates.NULL;
+            }
+            else if (PlayerInfo.instance.FacingRight != true && dir.x == 0)
+            {
+                PlayerStates.instance.currentPushOrPullState = PushOrPullStates.NULL;
+            }
+
+            //ANIMATIONS
+            if (PlayerStates.instance.currentPlayerInteractionState == PlayerInteractionStates.INTERACTING)
+            {
+                if(interactionTriggered == false)
+                {
+                    _animHook.setInteractionTrigger();
+                    interactionTriggered = true;
+
+                    if (m_disableCollider != null)
+                        m_disableCollider.isTrigger = true;
+                }
+
+                if (PlayerStates.instance.currentPushOrPullState == PushOrPullStates.NULL)
+                {
+                    _animHook.setInteractionToIdle();
+                }
+
+                if (PlayerStates.instance.currentPushOrPullState == PushOrPullStates.PUSHING)
+                {
+                    _animHook.togglePushOrPullState(true);
+                }
+
+                if (PlayerStates.instance.currentPushOrPullState == PushOrPullStates.PULLING)
+                {
+                    _animHook.togglePushOrPullState(false);
+                }              
+            }           
+
             #endregion
+
         }
         else if (Input.GetKeyUp(KeyCode.E))
         {   //If the player lets go of E WHILE interacting with an object
@@ -63,6 +104,12 @@ public class PlayerInteraction : MonoBehaviour
                 moveableObj.GetComponent<FixedJoint2D>().enabled = false;
                 moveableObj.GetComponent<FixedJoint2D>().connectedBody = null;
                 PlayerStates.instance.currentPlayerInteractionState = PlayerInteractionStates.NOTINTERACTING;
+
+                if (m_disableCollider != null)
+                    m_disableCollider.isTrigger = false;
+
+                interactionTriggered = false;
+                _animHook.isInteracting();
 
 
                 moveableObj = null;
@@ -102,6 +149,6 @@ public class PlayerInteraction : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(rayStartPoint.position, (Vector2)rayStartPoint.position + Vector2.right * transform.localScale.x * rayDist);
+        Gizmos.DrawLine(rayStartPoint.position, (Vector2)rayStartPoint.position + Vector2.right * rayDist);
     }
 }
