@@ -7,6 +7,7 @@ public class PlayerInfo : MonoBehaviour
     //USED TO STORE VALUES WHICH MULTIPLE SCRIPTS WILL USE
     public static PlayerInfo instance;
 
+    private bool playerHasControl = true;
     private bool facingRight;
     private Vector2 dir;
     private bool isClimbing;
@@ -20,6 +21,11 @@ public class PlayerInfo : MonoBehaviour
         thisRB = GetComponent<Rigidbody2D>();
     }
 
+    public bool PlayerHasControl
+    {
+        get { return playerHasControl; }
+        set { playerHasControl = value; }
+    }
     //returns players current direction based on local scale
     public bool FacingRight
     {

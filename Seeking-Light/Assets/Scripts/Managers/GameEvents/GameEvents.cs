@@ -12,7 +12,7 @@ public class GameEvents : MonoBehaviour
     void Awake()
     {
         instance = this;
-    }
+    }   
 
     //If an event has no suscribers the system will report it.
     public event Action onBinKnockover1;

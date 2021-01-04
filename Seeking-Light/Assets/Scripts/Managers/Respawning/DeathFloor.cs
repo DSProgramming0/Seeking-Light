@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class DeathFloor : MonoBehaviour
 {
-    [SerializeField] private RespawnManager _respawnManager;
+    [SerializeField] private PlayerDeath _playerDeath;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            _respawnManager.StartRespawn();
+            _playerDeath.Death();
         }
     }
 }

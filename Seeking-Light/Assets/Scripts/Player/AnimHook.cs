@@ -47,7 +47,12 @@ public class AnimHook : MonoBehaviour
     {
         thisAnimator.SetTrigger("stoppedInteracting");
         thisAnimator.SetBool("InteractionIdle", false);
+    }
 
+    public void resetPose(bool _shouldReset)
+    {
+        Debug.Log("Called");
+        thisAnimator.SetBool("resetPose", _shouldReset);
     }
 
     public void togglePushOrPullState(bool _isPushing)

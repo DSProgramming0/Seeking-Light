@@ -17,7 +17,7 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private Transform m_CeilingCheck;                          // A position marking where to check for ceilings
     [SerializeField] private Collider2D m_CrouchDisableCollider;                // A collider that will be disabled when crouching
 
-    [Header("Movement")]
+    [Header("Movement")]   
     [SerializeField] private float m_JumpForce = 400f;                          // Amount of force added when the player jumps.
     [Range(0, 1)] [SerializeField] private float m_CrouchSpeed = 4F;            // Amount of maxSpeed applied to crouching movement. 1 = 100%
     [SerializeField] private bool m_AirControl = false;							// Whether or not a player can steer while jumping;
@@ -84,41 +84,52 @@ public class CharacterController2D : MonoBehaviour
     }
 
     private void FixedUpdate()
-	{
-		bool wasGrounded = m_Grounded;
-		m_Grounded = false;
-        thisAnim.setJumpingState(true);
-        thisAnim.setGroundBool(m_Grounded);
+    {
+        if (PlayerInfo.instance.PlayerHasControl)
+        {
+            bool wasGrounded = m_Grounded;
+            m_Grounded = false;
+            thisAnim.setJumpingState(true);
+            thisAnim.setGroundBool(m_Grounded);
 
-        // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
-        // This can be done using layers instead but Sample Assets will not overwrite your project settings.
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
-		for (int i = 0; i < colliders.Length; i++)
-		{
-			if (colliders[i].gameObject != gameObject)
-			{
-				m_Grounded = true;
-                thisAnim.setGroundBool(m_Grounded);
-                thisAnim.setJumpingState(false);
-				if (!wasGrounded)
-					OnLandEvent.Invoke();
-			}
-		}
+            // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
+            // This can be done using layers instead but Sample Assets will not overwrite your project settings.
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i].gameObject != gameObject)
+                {
+                    m_Grounded = true;
+                    thisAnim.setGroundBool(m_Grounded);
+                    thisAnim.setJumpingState(false);
+                    if (!wasGrounded)
+                        OnLandEvent.Invoke();
+                }
+            }
 
-        Move(horizontalMove * Time.fixedDeltaTime, crouch, jump);
-        jump = false;
+            Move(horizontalMove * Time.fixedDeltaTime, crouch, jump);
+            jump = false;
 
-        ClimbLadder();        
+            ClimbLadder();
+        }        
     }
 
     void Update()
     {
-        if (PlayerStates.instance.currentPlayerInteractionState != PlayerInteractionStates.INTERACTING)
+        if (PlayerInfo.instance.PlayerHasControl)
         {
-            Jump();
-        }
+            //Debug.Log("Player has control");
+            if (PlayerStates.instance.currentPlayerInteractionState != PlayerInteractionStates.INTERACTING)
+            {
+                Jump();
+            }
 
-        MovementInput();
+            MovementInput();
+        }
+        else
+        {
+            //Debug.Log("Player does not have control");
+        }
     }
 
     private void MovementInput()
@@ -164,162 +175,174 @@ public class CharacterController2D : MonoBehaviour
 
     public void Move(float move, bool crouch, bool jump)
 	{
-        if(updateDirection == true)
+        if (PlayerInfo.instance.PlayerHasControl)
         {
-            PlayerInfo.instance.FacingRight = m_FacingRight;
+            if (updateDirection == true)
+            {
+                PlayerInfo.instance.FacingRight = m_FacingRight;
+            }
+
+            // If crouching, check to see if the character can stand up
+            if (!crouch)
+            {
+                // If the character has a ceiling preventing them from standing up, keep them crouching
+                if (Physics2D.OverlapCircle(m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround))
+                {
+                    crouch = true;
+                }
+            }
+
+            //only control the player if grounded or airControl is turned on
+            if (m_Grounded || m_AirControl)
+            {
+                if (PlayerStates.instance.currentPlayerInteractionState == PlayerInteractionStates.NOTINTERACTING)
+                {
+                    // If crouching
+                    if (crouch)
+                    {
+                        if (!m_wasCrouching)
+                        {
+                            m_wasCrouching = true;
+                            OnCrouchEvent.Invoke(true);
+                        }
+
+                        // Reduce the speed by the crouchSpeed multiplier
+                        move *= m_CrouchSpeed;
+
+                        // Disable one of the colliders when crouching
+                        if (m_CrouchDisableCollider != null)
+                            m_CrouchDisableCollider.isTrigger = true;
+                    }
+                    else
+                    {
+                        // Enable the collider when not crouching
+                        if (m_CrouchDisableCollider != null)
+                            m_CrouchDisableCollider.isTrigger = false;
+
+                        if (m_wasCrouching)
+                        {
+                            m_wasCrouching = false;
+                            OnCrouchEvent.Invoke(false);
+                        }
+                    }
+                }
+
+                // Move the character by finding the target velocity
+                Vector3 targetVelocity = new Vector2(move * 10f, rb.velocity.y);
+                // And then smoothing it out and applying it to the character
+                rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
+
+                if (PlayerStates.instance.currentPlayerInteractionState != PlayerInteractionStates.INTERACTING)
+                {
+                    // If the input is moving the player right and the player is facing left...
+                    if (move > 0 && !m_FacingRight)
+                    {
+                        // ... flip the player.
+                        Flip();
+                    }
+                    // Otherwise if the input is moving the player left and the player is facing right...
+                    else if (move < 0 && m_FacingRight)
+                    {
+                        // ... flip the player.
+                        Flip();
+                    }
+                }
+            }
+
+            PlayerInfo.instance.IsCrouching = m_wasCrouching;
         }
-
-        // If crouching, check to see if the character can stand up
-        if (!crouch)
-		{
-			// If the character has a ceiling preventing them from standing up, keep them crouching
-			if (Physics2D.OverlapCircle(m_CeilingCheck.position, k_CeilingRadius, m_WhatIsGround))
-			{
-				crouch = true;
-			}
-		}
-
-		//only control the player if grounded or airControl is turned on
-		if (m_Grounded || m_AirControl)
-		{
-            if(PlayerStates.instance.currentPlayerInteractionState == PlayerInteractionStates.NOTINTERACTING)
-            {
-                // If crouching
-                if (crouch)
-                {
-                    if (!m_wasCrouching)
-                    {
-                        m_wasCrouching = true;
-                        OnCrouchEvent.Invoke(true);
-                    }
-
-                    // Reduce the speed by the crouchSpeed multiplier
-                    move *= m_CrouchSpeed;
-
-                    // Disable one of the colliders when crouching
-                    if (m_CrouchDisableCollider != null)
-                        m_CrouchDisableCollider.isTrigger = true;
-                }
-                else
-                {
-                    // Enable the collider when not crouching
-                    if (m_CrouchDisableCollider != null)
-                        m_CrouchDisableCollider.isTrigger = false;
-
-                    if (m_wasCrouching)
-                    {
-                        m_wasCrouching = false;
-                        OnCrouchEvent.Invoke(false);
-                    }
-                }
-            }			
-
-			// Move the character by finding the target velocity
-			Vector3 targetVelocity = new Vector2(move * 10f, rb.velocity.y);
-			// And then smoothing it out and applying it to the character
-			rb.velocity = Vector3.SmoothDamp(rb.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
-
-            if(PlayerStates.instance.currentPlayerInteractionState != PlayerInteractionStates.INTERACTING)
-            {
-                // If the input is moving the player right and the player is facing left...
-                if (move > 0 && !m_FacingRight)
-                {
-                    // ... flip the player.
-                    Flip();
-                }
-                // Otherwise if the input is moving the player left and the player is facing right...
-                else if (move < 0 && m_FacingRight)
-                {
-                    // ... flip the player.
-                    Flip();
-                }
-            }		
-		}
-
-        PlayerInfo.instance.IsCrouching = m_wasCrouching;
     }
 
     void Jump()
     {
-        //Hangtime when jumping off edges of platforms
-        if(m_Grounded)
+        if (PlayerInfo.instance.PlayerHasControl)
         {
-            hangCounter = hangTime;
-        }
-        else
-        {
-            hangCounter -= Time.deltaTime;
-        }
+            //Hangtime when jumping off edges of platforms
+            if (m_Grounded)
+            {
+                hangCounter = hangTime;
+            }
+            else
+            {
+                hangCounter -= Time.deltaTime;
+            }
 
-        //Manager jump buffer
-        if (Input.GetButtonDown("Jump"))
-        {
-            jumpBufferCount = jumpBufferLength;
-        }
-        else
-        {
-            jumpBufferCount -= Time.deltaTime;
-        }
+            //Manager jump buffer
+            if (Input.GetButtonDown("Jump"))
+            {
+                jumpBufferCount = jumpBufferLength;
+            }
+            else
+            {
+                jumpBufferCount -= Time.deltaTime;
+            }
 
-        //Controllable jumps/ Hold to do a higher jump
-        // If the player should jump...
-        if (jumpBufferCount >= 0 && hangCounter > 0)
-        {
-            // Add a vertical force to the player.
-            m_Grounded = false;
-            thisAnim.setTakeOffTrigger();
+            //Controllable jumps/ Hold to do a higher jump
+            // If the player should jump...
+            if (jumpBufferCount >= 0 && hangCounter > 0)
+            {
+                // Add a vertical force to the player.
+                m_Grounded = false;
+                thisAnim.setTakeOffTrigger();
 
-            rb.velocity = new Vector2(rb.velocity.x, m_JumpForce);
-            jumpBufferCount = 0f;
-        }
+                rb.velocity = new Vector2(rb.velocity.x, m_JumpForce);
+                jumpBufferCount = 0f;
+            }
 
-        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * .5f);
+            if (Input.GetButtonUp("Jump") && rb.velocity.y > 0)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * .5f);
+            }
         }
     }
 
     void ClimbLadder()
     {
-        Physics2D.queriesStartInColliders = false;
-        RaycastHit2D hitInfo = Physics2D.Raycast(rayStartPoint.position, Vector2.right * transform.localScale.x, RayDistance, whatIsLadder);
-        
-        if(hitInfo.collider != null)
+        if (PlayerInfo.instance.PlayerHasControl)
         {
-            //Debug.Log("LadderDetected");
-            if (Input.GetKeyDown(KeyCode.W))
+            Physics2D.queriesStartInColliders = false;
+            RaycastHit2D hitInfo = Physics2D.Raycast(rayStartPoint.position, Vector2.right * transform.localScale.x, RayDistance, whatIsLadder);
+
+            if (hitInfo.collider != null)
             {
-                isClimbing = true;
+                //Debug.Log("LadderDetected");
+                if (Input.GetKeyDown(KeyCode.W))
+                {
+                    isClimbing = true;
+                }
             }
-        }
-        else
-        {
-            isClimbing = false;
-        }
+            else
+            {
+                isClimbing = false;
+            }
 
-        if (isClimbing && hitInfo.collider != null)
-        {
-            inputVertical = Input.GetAxisRaw("Vertical");
-            rb.velocity = new Vector2(rb.velocity.x, inputVertical * climbSpeed);
-            rb.gravityScale = 0;
-        }
-        else
-        {
-            rb.gravityScale = 15f;
-        }
+            if (isClimbing && hitInfo.collider != null)
+            {
+                inputVertical = Input.GetAxisRaw("Vertical");
+                rb.velocity = new Vector2(rb.velocity.x, inputVertical * climbSpeed);
+                rb.gravityScale = 0;
+            }
+            else
+            {
+                rb.gravityScale = 15f;
+            }
 
-        PlayerInfo.instance.IsClimbing = isClimbing;
+            PlayerInfo.instance.IsClimbing = isClimbing;
+        }
     }   
     
     private void Flip()
 	{
-		// Switch the way the player is labelled as facing.
-		m_FacingRight = !m_FacingRight;
+        if (PlayerInfo.instance.PlayerHasControl)
+        {
+            // Switch the way the player is labelled as facing.
+            m_FacingRight = !m_FacingRight;
 
-		// Multiply the player's x local scale by -1.
-		Vector3 theScale = transform.localScale;
-		theScale.x *= -1;
-		transform.localScale = theScale;
+            // Multiply the player's x local scale by -1.
+            Vector3 theScale = transform.localScale;
+            theScale.x *= -1;
+            transform.localScale = theScale;
+        }
 	}
 
     public void resetPlayerAtLastCheckpoint(Checkpoint lastCheckpointHit)

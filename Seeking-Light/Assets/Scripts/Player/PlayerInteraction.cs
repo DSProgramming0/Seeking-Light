@@ -130,16 +130,28 @@ public class PlayerInteraction : MonoBehaviour
         }       
     }  
 
+    public void resetFlashlightOnRespawn()
+    {
+
+        flashlightOn = false;
+        flashlight.enabled = false;
+        _animHook.setPlayerFlashlight(flashlightOn);
+
+
+    }
+
     void toggleFlashLight()
     {
         if(flashlightOn == false)
         {
+            PlayerStates.instance.currentPlayerFlashlightState = PlayerFlashlightStates.FLASHLIGHT_ON;
             flashlight.enabled = true;
             flashlightOn = true;
             _animHook.setPlayerFlashlight(flashlightOn);
         }
         else
         {
+            PlayerStates.instance.currentPlayerFlashlightState = PlayerFlashlightStates.FLASHLIGHT_OFF;
             flashlight.enabled = false;
             flashlightOn = false;
             _animHook.setPlayerFlashlight(flashlightOn);
