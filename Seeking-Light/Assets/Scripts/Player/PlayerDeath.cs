@@ -13,6 +13,11 @@ public class PlayerDeath : MonoBehaviour
     [SerializeField] private List<Collider2D> collidersToDisable;
     [SerializeField] private Rigidbody2D originalRigidBody;
 
+    [SerializeField] private GameObject flashLightDropped;
+    [SerializeField] private GameObject flashLightToDrop;
+    [SerializeField] private GameObject flashlightDropPoint;
+    [SerializeField] private bool hasFlashlightDropped = false;
+
     [Header("Ragdoll Body")]
     [SerializeField] private GameObject ragdollBody;
     [SerializeField] private List<Rigidbody2D> ragdollRigidBodies;
@@ -43,6 +48,18 @@ public class PlayerDeath : MonoBehaviour
     public void Death()
     {
         thisAnim.resetPose(true); //Sets animator to an idle state (Prevents glitch where player would be stuck on last frame before death!)
+
+        if(PlayerStates.instance.currentPlayerFlashlightState == PlayerFlashlightStates.FLASHLIGHT_ON)
+        {
+            if (hasFlashlightDropped == false)
+            {
+                flashLightDropped = Instantiate(flashLightToDrop, flashlightDropPoint.transform.position, Quaternion.identity);
+                Object.Destroy(flashLightDropped, 4f);
+
+                hasFlashlightDropped = true;
+            }
+        }
+       
 
         PlayerStates.instance.currentPlayerConditionState = PlayerConditionStates.DEAD; //Sets player state
 
@@ -93,11 +110,10 @@ public class PlayerDeath : MonoBehaviour
     }
 
     private IEnumerator startReset()
-    {
+    {      
         yield return new WaitForSeconds(2f);
-        
         //Disable any forces on body parts by making each body parts rigid body static. This stops any weird shaking when player dies
-        foreach(Rigidbody2D bodyPartRB in ragdollRigidBodies)
+        foreach (Rigidbody2D bodyPartRB in ragdollRigidBodies)
         {
             bodyPartRB.bodyType = RigidbodyType2D.Static;
             bodyPartRB.simulated = false;
@@ -146,6 +162,8 @@ public class PlayerDeath : MonoBehaviour
 
         yield return new WaitForSeconds(.15f);
         thisAnim.resetPose(false); //Stops playing idle animation (Prevents glitch where player would be stuck on last frame before death!)
+        flashLightDropped = null;
+        hasFlashlightDropped = false;
 
         StopCoroutine(startReset());
     }

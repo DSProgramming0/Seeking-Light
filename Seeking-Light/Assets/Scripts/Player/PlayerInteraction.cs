@@ -19,6 +19,7 @@ public class PlayerInteraction : MonoBehaviour
     private bool playerHasFlashlight = false;
     [SerializeField] private bool flashlightOn = false;
     [SerializeField] private Light2D flashlight;
+    [SerializeField] private SpriteRenderer flashLightSprite;
 
     void Update()
     {
@@ -135,9 +136,8 @@ public class PlayerInteraction : MonoBehaviour
 
         flashlightOn = false;
         flashlight.enabled = false;
+        flashLightSprite.enabled = false;
         _animHook.setPlayerFlashlight(flashlightOn);
-
-
     }
 
     void toggleFlashLight()
@@ -146,6 +146,8 @@ public class PlayerInteraction : MonoBehaviour
         {
             PlayerStates.instance.currentPlayerFlashlightState = PlayerFlashlightStates.FLASHLIGHT_ON;
             flashlight.enabled = true;
+            flashLightSprite.enabled = true;
+
             flashlightOn = true;
             _animHook.setPlayerFlashlight(flashlightOn);
         }
@@ -153,6 +155,7 @@ public class PlayerInteraction : MonoBehaviour
         {
             PlayerStates.instance.currentPlayerFlashlightState = PlayerFlashlightStates.FLASHLIGHT_OFF;
             flashlight.enabled = false;
+            flashLightSprite.enabled = false;
             flashlightOn = false;
             _animHook.setPlayerFlashlight(flashlightOn);
         }

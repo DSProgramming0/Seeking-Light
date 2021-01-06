@@ -42,6 +42,8 @@ public class PlayerStates : MonoBehaviour
         else //If the player is not alive, they cannot
         {
             PlayerInfo.instance.PlayerHasControl = false;
+            currentPlayerFlashlightState = PlayerFlashlightStates.FLASHLIGHT_OFF;
+            currentPlayerInteractionState = PlayerInteractionStates.NOTINTERACTING;
         }
     }
 

@@ -33,5 +33,26 @@ public class GameManager : MonoBehaviour
         GameObjectsToReset.Clear();
     }
 
-   
+    public void callFadeOutSound(AudioSource _audioSource, float _fadeTime)
+    {
+        StartCoroutine(FadeOutSounds(_audioSource, _fadeTime));
+    }
+
+    private IEnumerator FadeOutSounds(AudioSource audioSource, float FadeTime)
+    {
+        float startVolume = audioSource.volume;
+
+        while (audioSource.volume > 0)
+        {
+            audioSource.volume -= startVolume * Time.deltaTime / FadeTime;
+
+            yield return null;
+        }
+
+        audioSource.Stop();
+        yield return new WaitForSeconds(1f);
+        SoundManager.DestroySound(audioSource.gameObject);
+    }
+
+
 }

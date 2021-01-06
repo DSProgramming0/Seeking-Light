@@ -45,6 +45,12 @@ public class UITweener : MonoBehaviour
         StopCoroutine(Blackout());
     }
 
+    public void lowerSound(GameObject sound, float _volume)
+    {
+        Debug.Log("Called");
+        LeanTween.value(sound, sound.GetComponent<AudioSource>().volume, 0, duration * Time.deltaTime);
+    }
+
     public void toggleDoor()
     {
         LeanTween.scaleY(this.gameObject, 0.5f, duration).setDelay(delay).setEase(inType);

@@ -5,6 +5,7 @@ using UnityEngine;
 public class DeathFloor : MonoBehaviour
 {
     [SerializeField] private PlayerDeath _playerDeath;
+    
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

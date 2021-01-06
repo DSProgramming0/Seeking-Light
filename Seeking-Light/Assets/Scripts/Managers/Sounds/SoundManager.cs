@@ -4,8 +4,7 @@ using UnityEngine;
 
 public static class SoundManager 
 {    
-    //Handles all sounds throught game.    
-
+    //Handles all sounds throught game.  
     public enum Sound
     {
         BinKnockover1,
@@ -14,7 +13,15 @@ public static class SoundManager
 
         PlayerFootsteps,
 
-        PlayerFootstep
+        PlayerFootstep,
+
+        Rainfall1,
+        
+        Ambience1,
+
+        SpikeImpalement1,
+        SpikeImpalement2,
+        SpikeImpalement3
     }
 
     private static Dictionary<Sound, float> soundTimerDictionary;
@@ -42,19 +49,20 @@ public static class SoundManager
         }        
     }
 
-    public static void Play3DSound(Sound clipToPlay, bool shouldLoop, bool shouldDestroy, float destroyDelayTime, float _volume, Vector3 position)
+    public static AudioSource Play3DSound(Sound clipToPlay, bool shouldLoop, bool shouldDestroy, float destroyDelayTime, float _volume, float _range, Vector3 position)
     {
         if (canPlaySound(clipToPlay))
         {
+
             GameObject soundGameObject = new GameObject("Sound");
             soundGameObject.transform.position = position;
             AudioSource audioSource = soundGameObject.AddComponent<AudioSource>();
             audioSource.volume = _volume;
             audioSource.panStereo = 0;
             audioSource.spatialBlend = 1f;
-            audioSource.maxDistance = 80f;
+            audioSource.maxDistance = _range;
             audioSource.rolloffMode = AudioRolloffMode.Linear;
-
+           
             if (shouldLoop)
             {
                 audioSource.loop = true;
@@ -67,8 +75,17 @@ public static class SoundManager
             {
                 Object.Destroy(soundGameObject, audioSource.clip.length + .5f);
             }
+
+            return audioSource;
         }
+
+        return null;
     }
+
+    public static void DestroySound(GameObject _soundToDestroy)
+    {
+        Object.Destroy(_soundToDestroy, .5f);
+    }    
 
     private static AudioClip GetAudioClip(Sound clipToFind)
     {
