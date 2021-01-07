@@ -79,6 +79,10 @@ public class AnimHook : MonoBehaviour
 
         thisAnimator.SetBool("Pushing", false);
         thisAnimator.SetBool("Pulling", false);
+    }
 
+    public void setClimbState(bool _canClimb)
+    {
+        thisAnimator.SetBool("canClimbLedge", _canClimb);
     }
 }

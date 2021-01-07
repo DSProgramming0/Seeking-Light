@@ -1,21 +1,26 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CharacterController2D : MonoBehaviour
 {
     [Header("References")]
     private Rigidbody2D rb;
-    [SerializeField] private AnimHook thisAnim; 
+    [SerializeField] private AnimHook thisAnim;
+    [SerializeField] private PlayerDeath playerDeath;
 
     [Header("Ground and ceiling checks")]
     const float k_GroundedRadius = 1.1f; // Radius of the overlap circle to determine if grounded
-    [SerializeField]	private bool m_Grounded;            // Whether or not the player is grounded.
+    [SerializeField]	private bool m_Grounded = true;            // Whether or not the player is grounded.
 	const float k_CeilingRadius = .2f; // Radius of the overlap circle to determine if the player can stand up  
-    [SerializeField] private LayerMask m_WhatIsGround;                          // A mask determining what is ground to the character
+    [SerializeField] private PhysicsMaterial2D slipMaterial;
+    [SerializeField] private PhysicsMaterial2D noSlipMaterial;
+    [SerializeField] private LayerMask m_WhatIsGround;          // A mask determining what is ground to the character
+    [SerializeField] private LayerMask m_WhatIsLedge;
     [SerializeField] private Transform m_GroundCheck;                           // A position marking where to check if the player is grounded.
-    [SerializeField] private Transform m_CeilingCheck;                          // A position marking where to check for ceilings
-    [SerializeField] private Collider2D m_CrouchDisableCollider;                // A collider that will be disabled when crouching
+    [SerializeField] private Transform m_CeilingCheck;                          // A position marking where to check for ceilings                   
+    [SerializeField] private List<Collider2D> CollidersToDisable; // A collider that will be disabled when crouching
 
     [Header("Movement")]   
     [SerializeField] private float m_JumpForce = 400f;                          // Amount of force added when the player jumps.
@@ -36,6 +41,7 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private float walkSpeedGain = 20f;
     [SerializeField] private float idleSpeedDrop = 25;
 
+    private bool flipDisabled = false;
     private bool jump = false;
     private bool crouch = false;    
     [SerializeField] private bool m_wasCrouching = false;
@@ -55,6 +61,23 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private float RayDistance;
     public LayerMask whatIsLadder;
     [SerializeField] private bool isClimbing = false;
+
+    [Header("LedgeClimbing")]
+    public float ledgeClimbXoffset1 = 0f;
+    public float ledgeClimbYoffset1 = 0f;
+    public float ledgeClimbXoffset2 = 0f;
+    public float ledgeClimbYoffset2 = 0f;
+
+    private Vector2 ledgePosBot;
+    private Vector2 ledgePos1;
+    private Vector2 ledgePos2;
+    private bool isTouchingWall;
+    private bool isTouchingLedge;
+    private bool canClimbLedge = false;
+    private bool ledgeDetected;
+    [SerializeField] private float wallCheckDistance;
+    public Transform wallCheck;
+    public Transform ledgeDetector;
 
     [Header("Events")]
     [Space]
@@ -82,35 +105,14 @@ public class CharacterController2D : MonoBehaviour
     {
         StartCoroutine(waitToUpdateDirection());
     }
-
+ 
     private void FixedUpdate()
     {
         if (PlayerInfo.instance.PlayerHasControl)
         {
-            bool wasGrounded = m_Grounded;
-            m_Grounded = false;
-            thisAnim.setJumpingState(true);
-            thisAnim.setGroundBool(m_Grounded);
+            groundCheck();
 
-            // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
-            // This can be done using layers instead but Sample Assets will not overwrite your project settings.
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
-            for (int i = 0; i < colliders.Length; i++)
-            {
-                if (colliders[i].gameObject != gameObject)
-                {
-                    m_Grounded = true;
-                    thisAnim.setGroundBool(m_Grounded);
-                    thisAnim.setJumpingState(false);
-                    if (!wasGrounded)
-                        OnLandEvent.Invoke();
-                }
-            }
-
-            Move(horizontalMove * Time.fixedDeltaTime, crouch, jump);
-            jump = false;
-
-            ClimbLadder();
+            Move(horizontalMove * Time.fixedDeltaTime, crouch, jump);  //MOVE IS CALLED HERE
         }        
     }
 
@@ -122,16 +124,21 @@ public class CharacterController2D : MonoBehaviour
             if (PlayerStates.instance.currentPlayerInteractionState != PlayerInteractionStates.INTERACTING)
             {
                 Jump();
+                checkLedgeClimb();
+                ClimbLadder();
             }
 
             MovementInput();
+            checkSurrounding();          
         }
         else
         {
             //Debug.Log("Player does not have control");
-        }
+        }    
+
     }
 
+    #region Standard Movement
     private void MovementInput()
     {
         horizontalMove = Input.GetAxisRaw("Horizontal");
@@ -139,7 +146,7 @@ public class CharacterController2D : MonoBehaviour
         PlayerInfo.instance.Dir = dir;
         horizontalMove = horizontalMove * currentSpeed;
 
-        if (Input.GetButton("Sprint")) //If player holds the sprint buttong, increase speed to the run speed amount
+        if (Input.GetButton("Sprint")) //If player holds the sprint button, increase speed to the run speed amount
         {
             float newSpeed = Mathf.Lerp(currentSpeed, runSpeed, sprintSpeedGain * Time.deltaTime);
             currentSpeed = newSpeed;
@@ -171,7 +178,7 @@ public class CharacterController2D : MonoBehaviour
         {
             crouch = false;
         }
-    }
+    } 
 
     public void Move(float move, bool crouch, bool jump)
 	{
@@ -195,7 +202,7 @@ public class CharacterController2D : MonoBehaviour
             //only control the player if grounded or airControl is turned on
             if (m_Grounded || m_AirControl)
             {
-                if (PlayerStates.instance.currentPlayerInteractionState == PlayerInteractionStates.NOTINTERACTING)
+                if (PlayerStates.instance.currentPlayerInteractionState == PlayerInteractionStates.NOTINTERACTING && canClimbLedge == false)
                 {
                     // If crouching
                     if (crouch)
@@ -210,14 +217,14 @@ public class CharacterController2D : MonoBehaviour
                         move *= m_CrouchSpeed;
 
                         // Disable one of the colliders when crouching
-                        if (m_CrouchDisableCollider != null)
-                            m_CrouchDisableCollider.isTrigger = true;
+                        if (CollidersToDisable[0] != null)
+                            CollidersToDisable[0].isTrigger = true;
                     }
                     else
                     {
                         // Enable the collider when not crouching
-                        if (m_CrouchDisableCollider != null)
-                            m_CrouchDisableCollider.isTrigger = false;
+                        if (CollidersToDisable[0] != null)
+                            CollidersToDisable[0].isTrigger = false;
 
                         if (m_wasCrouching)
                         {
@@ -294,46 +301,146 @@ public class CharacterController2D : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * .5f);
             }
         }
-    }
+    } 
 
+    private void groundCheck()
+    {
+        bool wasGrounded = m_Grounded;
+        m_Grounded = false;
+        jump = true;
+        thisAnim.setJumpingState(true);
+        thisAnim.setGroundBool(m_Grounded);     
+
+        // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
+        // This can be done using layers instead but Sample Assets will not overwrite your project settings.
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].gameObject != gameObject)
+            {
+                m_Grounded = true;
+                jump = false;
+                thisAnim.setGroundBool(m_Grounded);
+                thisAnim.setJumpingState(false);
+                if (!wasGrounded)
+                    OnLandEvent.Invoke();
+
+            }
+        }         
+
+        if(m_Grounded == false)
+        {
+            CollidersToDisable[1].sharedMaterial = slipMaterial;
+        }
+        else
+        {
+            CollidersToDisable[1].sharedMaterial = noSlipMaterial;
+        }
+    }
+    #endregion
+
+    #region LadderClimbing
     void ClimbLadder()
     {
-        if (PlayerInfo.instance.PlayerHasControl)
+        Physics2D.queriesStartInColliders = false;
+        RaycastHit2D hitInfo = Physics2D.Raycast(rayStartPoint.position, Vector2.right * transform.localScale.x, RayDistance, whatIsLadder);
+
+        if (hitInfo.collider != null)
         {
-            Physics2D.queriesStartInColliders = false;
-            RaycastHit2D hitInfo = Physics2D.Raycast(rayStartPoint.position, Vector2.right * transform.localScale.x, RayDistance, whatIsLadder);
-
-            if (hitInfo.collider != null)
+            //Debug.Log("LadderDetected");
+            if (Input.GetKeyDown(KeyCode.W))
             {
-                //Debug.Log("LadderDetected");
-                if (Input.GetKeyDown(KeyCode.W))
-                {
-                    isClimbing = true;
-                }
+                isClimbing = true;
             }
-            else
-            {
-                isClimbing = false;
-            }
-
-            if (isClimbing && hitInfo.collider != null)
-            {
-                inputVertical = Input.GetAxisRaw("Vertical");
-                rb.velocity = new Vector2(rb.velocity.x, inputVertical * climbSpeed);
-                rb.gravityScale = 0;
-            }
-            else
-            {
-                rb.gravityScale = 15f;
-            }
-
-            PlayerInfo.instance.IsClimbing = isClimbing;
         }
-    }   
-    
+        else
+        {
+            isClimbing = false;
+        }
+
+        if (isClimbing && hitInfo.collider != null)
+        {
+            inputVertical = Input.GetAxisRaw("Vertical");
+            rb.velocity = new Vector2(rb.velocity.x, inputVertical * climbSpeed);
+            rb.gravityScale = 0;
+        }
+        else
+        {
+            rb.gravityScale = 15f;
+        }
+
+        PlayerInfo.instance.IsClimbing = isClimbing;
+    }
+
+    #endregion
+
+    #region LedgeClimbing
+    private void checkLedgeClimb()
+    {
+        if (ledgeDetected & !canClimbLedge & jump )
+        {
+            canClimbLedge = true;
+
+            if (m_FacingRight)
+            {
+                ledgePos1 = new Vector2(Mathf.Floor(ledgePosBot.x + wallCheckDistance) - ledgeClimbXoffset1, Mathf.Floor(ledgePosBot.y) + ledgeClimbYoffset1);
+                ledgePos2 = new Vector2(Mathf.Floor(ledgePosBot.x + wallCheckDistance) + ledgeClimbXoffset2, Mathf.Floor(ledgePosBot.y) + ledgeClimbYoffset2);
+
+            }
+            else
+            {
+                ledgePos1 = new Vector2(Mathf.Ceil(ledgePosBot.x - wallCheckDistance) + ledgeClimbXoffset1, Mathf.Floor(ledgePosBot.y) + ledgeClimbYoffset1);
+                ledgePos2 = new Vector2(Mathf.Ceil(ledgePosBot.x - wallCheckDistance) - ledgeClimbXoffset2, Mathf.Floor(ledgePosBot.y) + ledgeClimbYoffset2);
+            }
+
+            PlayerInfo.instance.PlayerHasControl = false;
+            flipDisabled = true;
+
+            thisAnim.setClimbState(canClimbLedge);
+
+            foreach (Collider2D collider in CollidersToDisable)
+            {
+                collider.isTrigger = true;
+            }
+        }
+        if (canClimbLedge)
+        {
+            transform.position = ledgePos1;
+        }
+    }
+
+    public void FinishLedgeClimb()
+    {
+        canClimbLedge = false;
+        transform.position = ledgePos2;
+        PlayerInfo.instance.PlayerHasControl = true;
+        flipDisabled = false;
+        ledgeDetected = false;
+
+        foreach (Collider2D collider in CollidersToDisable)
+        {
+            collider.isTrigger = false;
+        }
+
+        thisAnim.setClimbState(canClimbLedge);
+    }
+
+    private void checkSurrounding()
+    {
+        isTouchingWall = Physics2D.Raycast(wallCheck.position, transform.right * transform.localScale.x, wallCheckDistance, m_WhatIsLedge);
+        isTouchingLedge = Physics2D.Raycast(ledgeDetector.position, transform.right * transform.localScale.x, wallCheckDistance, m_WhatIsLedge);
+
+        if (isTouchingWall && !isTouchingLedge && !ledgeDetected)
+        {
+            ledgeDetected = true;
+            ledgePosBot = wallCheck.position;
+        }
+    }
+    #endregion
+
     private void Flip()
 	{
-        if (PlayerInfo.instance.PlayerHasControl)
+        if (flipDisabled == false)
         {
             // Switch the way the player is labelled as facing.
             m_FacingRight = !m_FacingRight;
@@ -359,9 +466,10 @@ public class CharacterController2D : MonoBehaviour
 
     }
 
-    //void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawRay(rayStartPoint.position, Vector2.right * RayDistance);
-    //}
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(wallCheck.position, transform.right * wallCheckDistance);
+        Gizmos.DrawRay(ledgeDetector.position, transform.right * wallCheckDistance);        
+    }
 }

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 855837661661f7840b35ab3f48207b4a, type: 3}
+  m_Name: Brian
+  m_EditorClassIdentifier: 
+  name: Brian
+  NPCDialogue:
+  - "Yo buddy, how you doing?\t\n\n"
+  - I am good thankyou
+  - Yeah man Im from Italy
+  - Okay bye
+  playerDialogue:
+  - Im feeling tired
+  - You look Italian
+  - Okay bye bitch
