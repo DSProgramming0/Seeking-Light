@@ -146,7 +146,7 @@ public class CharacterController2D : MonoBehaviour
         PlayerInfo.instance.Dir = dir;
         horizontalMove = horizontalMove * currentSpeed;
 
-        if (Input.GetButton("Sprint")) //If player holds the sprint button, increase speed to the run speed amount
+        if (Input.GetButton("Sprint") && dir.magnitude != 0) //If player holds the sprint button, increase speed to the run speed amount
         {
             float newSpeed = Mathf.Lerp(currentSpeed, runSpeed, sprintSpeedGain * Time.deltaTime);
             currentSpeed = newSpeed;

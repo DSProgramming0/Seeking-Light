@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c5122a5ca3e24489ad816223e7ecc4e, type: 3}
+  m_Name: PlayerResponse2C
+  m_EditorClassIdentifier: 
+  from: {fileID: 11400000, guid: f36d7020f7ee246b7851bb6f8f4c5e6b, type: 2}
+  text: text
+  nextSentence: {fileID: 0}
+  options:
+  - text: Im sorry! I didnt mean to hurt you! I was just...
+    nextSentence: {fileID: 11400000, guid: 9c923b50de4f7814ab7b1811aff08e9f, type: 2}
+    consequence: {fileID: 11400000, guid: d8710d1203545bb42b36b3462474f58d, type: 2}
+  - text: I'll do what I want.
+    nextSentence: {fileID: 11400000, guid: 29128b0bf7567a343b5f70c833088647, type: 2}
+    consequence: {fileID: 11400000, guid: 089753ccf7c6e45b2b36de43c7b86e71, type: 2}

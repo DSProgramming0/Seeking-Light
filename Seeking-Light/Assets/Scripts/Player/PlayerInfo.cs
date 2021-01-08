@@ -7,7 +7,7 @@ public class PlayerInfo : MonoBehaviour
     //USED TO STORE VALUES WHICH MULTIPLE SCRIPTS WILL USE
     public static PlayerInfo instance;
 
-    private bool playerHasControl = true;
+    [SerializeField] private bool playerHasControl = true;
     private bool facingRight;
     private Vector2 dir;
     private bool isClimbing;

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c5122a5ca3e24489ad816223e7ecc4e, type: 3}
+  m_Name: PlayerResponse1A
+  m_EditorClassIdentifier: 
+  from: {fileID: 11400000, guid: f36d7020f7ee246b7851bb6f8f4c5e6b, type: 2}
+  text: text
+  nextSentence: {fileID: 0}
+  options:
+  - text: Im sorry! Are you okay?
+    nextSentence: {fileID: 11400000, guid: 9ce71071e0ffae94d85a8a7be68db42d, type: 2}
+    consequence: {fileID: 11400000, guid: f1a710867ad8b4e9e8dc2042c6c1e0f4, type: 2}
+  - text: Really? You're jumpy!
+    nextSentence: {fileID: 11400000, guid: cd7a27a85bcab0745abda9f15a03f84f, type: 2}
+    consequence: {fileID: 0}
+  - text: How? You need to calm down.
+    nextSentence: {fileID: 11400000, guid: e43bec4e40dff2f428e0b83533f6c169, type: 2}
+    consequence: {fileID: 11400000, guid: 089753ccf7c6e45b2b36de43c7b86e71, type: 2}
