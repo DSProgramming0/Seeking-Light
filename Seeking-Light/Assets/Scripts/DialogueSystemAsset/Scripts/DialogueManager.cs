@@ -26,11 +26,11 @@ public class DialogueManager : MonoBehaviour
     public GameObject DialogueUI;
     [Tooltip("The text UIs that display options")]
     public Text[] optionsUI;
+    [SerializeField] private int currentOptionIndex = 0;
+    [SerializeField] private GameObject currentOptionHighlight;
 
     DialogueSO dialogue;
-    Sentence currentSentence;
-
-  
+    Sentence currentSentence;  
 
     public void StartDialogue(DialogueSO dialogueSO)
     {
@@ -113,17 +113,8 @@ public class DialogueManager : MonoBehaviour
     }
 
     void Update()
-    {
-        if (isTyping)
-        {
-            continueButton.interactable = false;
-            continueButtonText.enabled = false;
-        }
-        else
-        {
-            continueButton.interactable = true;
-            continueButtonText.enabled = true;
-        }
+    {    
+        checkMenuInput();
     }
 
     IEnumerator Typeout(string sentence, Text textbox)
@@ -141,6 +132,73 @@ public class DialogueManager : MonoBehaviour
         {
             Debug.Log("Sentece complete");
             isTyping = false;
+        }
+    }
+
+    private void checkMenuInput()
+    {
+        if (PlayerStates.instance.currentConverstaionState == PlayerConverstaionStates.IN_CONVERSATION)
+        {
+            if (isTyping == false)
+            {
+                currentOptionHighlight.SetActive(true);
+                continueButton.interactable = true;
+                continueButtonText.enabled = true;
+
+                if (Input.GetButtonDown("MenuPositive"))
+                {
+                    currentOptionIndex += 1;
+                    if (currentOptionIndex > currentSentence.options.Count - 1)
+                    {
+                        currentOptionIndex = 0;
+                    }
+                }
+
+                if (Input.GetButtonDown("MenuNegative"))
+                {
+                    currentOptionIndex -= 1;
+                    if (currentOptionIndex < 0)
+                    {
+                        currentOptionIndex = currentSentence.options.Count - 1;
+                    }
+                }
+
+                highlightOption(currentOptionIndex);
+
+            }
+            else
+            {
+                currentOptionHighlight.SetActive(false);
+                continueButton.interactable = false;
+                continueButtonText.enabled = false;
+            }
+
+            if (currentSentence.options.Count == 0)
+            {
+                Debug.Log("No options available");
+                currentOptionHighlight.SetActive(false);
+
+                if (Input.GetButtonDown("Jump") && isTyping == false)
+                {
+                    GoToNextSentence();
+                }
+            }
+        }
+        else
+        {
+            currentOptionHighlight.SetActive(false);
+            continueButton.interactable = false;
+            continueButtonText.enabled = false;
+        }
+    }
+
+    public void highlightOption(int index)
+    {
+        currentOptionHighlight.transform.position = optionsUI[index].transform.position;
+
+        if (Input.GetButtonDown("Jump") && isTyping == false && currentSentence.options.Count > 0)
+        {
+            OptionsOnClick(index);
         }
     }
 

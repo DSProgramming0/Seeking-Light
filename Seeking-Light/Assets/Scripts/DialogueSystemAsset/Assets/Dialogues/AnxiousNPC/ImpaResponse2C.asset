@@ -15,5 +15,5 @@ MonoBehaviour:
   from: {fileID: 11400000, guid: 5233ff5da53df9940bc591d7d695f7bb, type: 2}
   text: I understand. You just need to follow your light. It will guide you out of
     this place.
-  nextSentence: {fileID: 0}
+  nextSentence: {fileID: 11400000, guid: a4460d331d84ed44b9650a97c17481f1, type: 2}
   options: []

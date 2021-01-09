@@ -134,6 +134,8 @@ public class CharacterController2D : MonoBehaviour
         else
         {
             //Debug.Log("Player does not have control");
+            stopMovement();
+            thisAnim.setPlayerSpeed(0);
         }    
 
     }
@@ -146,12 +148,12 @@ public class CharacterController2D : MonoBehaviour
         PlayerInfo.instance.Dir = dir;
         horizontalMove = horizontalMove * currentSpeed;
 
-        if (Input.GetButton("Sprint") && dir.magnitude != 0) //If player holds the sprint button, increase speed to the run speed amount
+        if (Input.GetButton("Sprint") && dir.magnitude >= .9f || dir.magnitude <= -.9f) //If player holds the sprint button, increase speed to the run speed amount
         {
             float newSpeed = Mathf.Lerp(currentSpeed, runSpeed, sprintSpeedGain * Time.deltaTime);
             currentSpeed = newSpeed;
         }
-        else if (!Input.GetButton("Sprint") && dir.magnitude != 0) //decrease or increase speed to walk speed amount over time.
+        else if (!Input.GetButton("Sprint") && dir.magnitude >= .9f || dir.magnitude <= -.9f) //decrease or increase speed to walk speed amount over time.
         {
             float newSpeed = Mathf.Lerp(currentSpeed, walkSpeed, walkSpeedGain * Time.deltaTime);
             currentSpeed = newSpeed;
@@ -179,6 +181,11 @@ public class CharacterController2D : MonoBehaviour
             crouch = false;
         }
     } 
+
+    private void stopMovement()
+    {
+        currentSpeed = 0;        
+    }
 
     public void Move(float move, bool crouch, bool jump)
 	{
@@ -262,7 +269,7 @@ public class CharacterController2D : MonoBehaviour
 
     void Jump()
     {
-        if (PlayerInfo.instance.PlayerHasControl)
+        if (PlayerInfo.instance.PlayerHasControl && canClimbLedge == false)
         {
             //Hangtime when jumping off edges of platforms
             if (m_Grounded)
@@ -344,11 +351,12 @@ public class CharacterController2D : MonoBehaviour
     {
         Physics2D.queriesStartInColliders = false;
         RaycastHit2D hitInfo = Physics2D.Raycast(rayStartPoint.position, Vector2.right * transform.localScale.x, RayDistance, whatIsLadder);
+        inputVertical = Input.GetAxisRaw("Vertical");
 
         if (hitInfo.collider != null)
         {
             //Debug.Log("LadderDetected");
-            if (Input.GetKeyDown(KeyCode.W))
+            if (inputVertical != 0)
             {
                 isClimbing = true;
             }
@@ -360,7 +368,6 @@ public class CharacterController2D : MonoBehaviour
 
         if (isClimbing && hitInfo.collider != null)
         {
-            inputVertical = Input.GetAxisRaw("Vertical");
             rb.velocity = new Vector2(rb.velocity.x, inputVertical * climbSpeed);
             rb.gravityScale = 0;
         }

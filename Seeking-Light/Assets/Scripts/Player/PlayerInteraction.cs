@@ -28,7 +28,7 @@ public class PlayerInteraction : MonoBehaviour
         Physics2D.queriesStartInColliders = false; //Stops rayCast hitting colliders on palyer (If this has errors, switch to layerMask)
         RaycastHit2D hit = Physics2D.Raycast(rayStartPoint.position, Vector2.right * transform.localScale.x, rayDist);
 
-        if(hit.collider != null && hit.collider.tag == "MoveableObj" && Input.GetKey(KeyCode.E)) //If we have hit something & it has the MoveableObjTag && the player is holding down E
+        if(hit.collider != null && hit.collider.tag == "MoveableObj" && Input.GetButton("Interact")) //If we have hit something & it has the MoveableObjTag && the player is holding down E
         {
             moveableObj = hit.collider.gameObject; //Set the obj
 
@@ -97,7 +97,7 @@ public class PlayerInteraction : MonoBehaviour
             #endregion
 
         }
-        else if (Input.GetKeyUp(KeyCode.E))
+        else if (Input.GetButtonUp("Interact"))
         {   //If the player lets go of E WHILE interacting with an object
             if(hit.collider != null && hit.collider.tag == "MoveableObj")
             {
@@ -117,14 +117,14 @@ public class PlayerInteraction : MonoBehaviour
             }                      
         }
 
-        if( hit.collider != null && hit.collider.tag == "InteractableObj" && Input.GetKeyDown(KeyCode.E)) //If player is hitting an object with the interactableObj tag and presses E
+        if( hit.collider != null && hit.collider.tag == "InteractableObj" && Input.GetButton("Interact")) //If player is hitting an object with the interactableObj tag and presses E
         {
             hit.collider.GetComponent<Interact>().startInteraction(); //Call the interaction method on whatever type of interactable object it is
         }
 
         if(PlayerInfo.instance.PlayerHasFlashLight == true)
         {
-            if (Input.GetKeyDown(KeyCode.L))
+            if (Input.GetButtonDown("ToggleFlashlight")) 
             {
                 toggleFlashLight();
             }
@@ -133,7 +133,6 @@ public class PlayerInteraction : MonoBehaviour
 
     public void resetFlashlightOnRespawn()
     {
-
         flashlightOn = false;
         flashlight.enabled = false;
         flashLightSprite.enabled = false;

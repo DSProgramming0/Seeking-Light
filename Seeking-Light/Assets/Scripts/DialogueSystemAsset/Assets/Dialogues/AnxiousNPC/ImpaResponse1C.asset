@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   from: {fileID: 11400000, guid: 5233ff5da53df9940bc591d7d695f7bb, type: 2}
   text: Don't talk to me like that! Why are you even here?
-  nextSentence: {fileID: 0}
+  nextSentence: {fileID: 11400000, guid: 02b3384e5d7ed774c9568291f7f84753, type: 2}
   options: []

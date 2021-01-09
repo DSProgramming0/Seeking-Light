@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   from: {fileID: 11400000, guid: f36d7020f7ee246b7851bb6f8f4c5e6b, type: 2}
   text: Why? Whats wrong?
-  nextSentence: {fileID: 0}
+  nextSentence: {fileID: 11400000, guid: 032489d67ba6bed428f2e46df63f53c1, type: 2}
   options: []

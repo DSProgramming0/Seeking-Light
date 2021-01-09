@@ -10,11 +10,11 @@ public class DialogueTrigger : MonoBehaviour
 
     [SerializeField] private bool conversationExpended = false;
 
-    void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerStay2D(Collider2D collision)
     {
         if(conversationExpended == false)
         {
-            if (collision.CompareTag("Player"))
+            if (collision.CompareTag("Player") && Input.GetButtonDown("Interact"))
             {
                 StartDialogue();
                 conversationExpended = true;
