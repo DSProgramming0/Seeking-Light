@@ -23,7 +23,9 @@ public static class SoundManager
         SpikeImpalement2,
         SpikeImpalement3,
 
-        Blip1
+        Blip1,
+
+        SecretRevealed,
     }
 
     private static Dictionary<Sound, float> soundTimerDictionary;

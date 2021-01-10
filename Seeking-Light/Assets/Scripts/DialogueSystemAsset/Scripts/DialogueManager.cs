@@ -178,7 +178,7 @@ public class DialogueManager : MonoBehaviour
                 Debug.Log("No options available");
                 currentOptionHighlight.SetActive(false);
 
-                if (Input.GetButtonDown("Jump") && isTyping == false)
+                if (Input.GetButtonDown("Submit") && isTyping == false)
                 {
                     GoToNextSentence();
                 }
@@ -196,7 +196,7 @@ public class DialogueManager : MonoBehaviour
     {
         currentOptionHighlight.transform.position = optionsUI[index].transform.position;
 
-        if (Input.GetButtonDown("Jump") && isTyping == false && currentSentence.options.Count > 0)
+        if (Input.GetButtonDown("Submit") && isTyping == false && currentSentence.options.Count > 0)
         {
             OptionsOnClick(index);
         }

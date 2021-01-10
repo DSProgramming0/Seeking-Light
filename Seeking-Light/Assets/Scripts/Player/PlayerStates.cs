@@ -9,6 +9,7 @@ public class PlayerStates : MonoBehaviour
 
     [SerializeField] private AnimHook thisAnim;
 
+    public CompanionControlStates currentCompanionControlState;
     public PlayerConverstaionStates currentConverstaionState;
     public PlayerFlashlightStates currentPlayerFlashlightState;
     public PlayerConditionStates currentPlayerConditionState;
@@ -23,6 +24,7 @@ public class PlayerStates : MonoBehaviour
 
     void Start()
     {
+        currentCompanionControlState = CompanionControlStates.PLAYER_HAS_CONTROL;
         currentConverstaionState = PlayerConverstaionStates.NOT_IN_CONVERSATION;
         currentPlayerFlashlightState = PlayerFlashlightStates.FLASHLIGHT_OFF;
         currentPlayerConditionState = PlayerConditionStates.ALIVE;
@@ -46,6 +48,7 @@ public class PlayerStates : MonoBehaviour
             else
             {
                 PlayerInfo.instance.PlayerHasControl = false;
+                currentCompanionControlState = CompanionControlStates.PLAYER_NO_CONTROL;
             }
         }
         else //If the player is not alive, they cannot
@@ -56,6 +59,12 @@ public class PlayerStates : MonoBehaviour
         }
     }
 
+}
+
+public enum CompanionControlStates
+{
+    PLAYER_HAS_CONTROL,
+    PLAYER_NO_CONTROL
 }
 
 public enum PlayerConverstaionStates
