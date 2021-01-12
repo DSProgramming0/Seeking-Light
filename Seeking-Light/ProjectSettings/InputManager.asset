@@ -186,7 +186,7 @@ InputManager:
     descriptiveName: Crouch (K&M)
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: e
+    positiveButton: s
     altNegativeButton: 
     altPositiveButton: down
     gravity: 0
