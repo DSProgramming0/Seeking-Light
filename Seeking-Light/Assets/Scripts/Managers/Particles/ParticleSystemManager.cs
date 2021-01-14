@@ -11,7 +11,8 @@ public class ParticleSystemManager : MonoBehaviour
     private bool soundPlaying = false;
 
     [SerializeField] private Transform playerPos;
-    [SerializeField] private float offset;
+    [SerializeField] private float offsetX;
+    [SerializeField] private float offsetY;
 
     [SerializeField] private float movementSmooth;
    
@@ -71,7 +72,7 @@ public class ParticleSystemManager : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        this.transform.position = new Vector2(Mathf.Lerp(transform.position.x, playerPos.position.x + offset, Time.fixedDeltaTime * movementSmooth), transform.position.y);
+        this.transform.position = new Vector2(Mathf.Lerp(transform.position.x, playerPos.position.x + offsetX, Time.fixedDeltaTime * movementSmooth), Mathf.Lerp(transform.position.y, playerPos.position.y + offsetY, Time.fixedDeltaTime * movementSmooth));
     }    
 }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class UITweener : MonoBehaviour
 {
@@ -55,5 +56,5 @@ public class UITweener : MonoBehaviour
     {
         LeanTween.scaleY(this.gameObject, 0.5f, duration).setDelay(delay).setEase(inType);
         LeanTween.moveLocalX(this.gameObject, 0, duration);
-    }   
+    }  
 }

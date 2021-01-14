@@ -32,7 +32,8 @@ public class PlayerInteraction : MonoBehaviour
         {
             moveableObj = hit.collider.gameObject; //Set the obj
 
-            moveableObj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic; //Change the RigidbodyTyPE
+            moveableObj.GetComponent<Rigidbody2D>().gravityScale = 2f; //Change the Rigidbody gravityScale
+            moveableObj.GetComponent<Rigidbody2D>().mass = 5f; 
             moveableObj.GetComponent<FixedJoint2D>().enabled = true; //Enable and set the fixed joint target to the players Rigidbody
             moveableObj.GetComponent<FixedJoint2D>().connectedBody = PlayerInfo.instance.returnRB();
             PlayerStates.instance.currentPlayerInteractionState = PlayerInteractionStates.INTERACTING; //Set the correct interactions tate
@@ -101,7 +102,8 @@ public class PlayerInteraction : MonoBehaviour
         {   //If the player lets go of E WHILE interacting with an object
             if(hit.collider != null && hit.collider.tag == "MoveableObj")
             {
-                moveableObj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static; //Reset components and interaction state
+                moveableObj.GetComponent<Rigidbody2D>().gravityScale = 10f;  //Reset components and interaction state
+                moveableObj.GetComponent<Rigidbody2D>().mass = 30f;  
                 moveableObj.GetComponent<FixedJoint2D>().enabled = false;
                 moveableObj.GetComponent<FixedJoint2D>().connectedBody = null;
                 PlayerStates.instance.currentPlayerInteractionState = PlayerInteractionStates.NOTINTERACTING;

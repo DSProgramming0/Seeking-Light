@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class DialogueManager : MonoBehaviour
 {
     [Header("GameEvents")]
+    [SerializeField] private DoTweener sidePrompt;
     public GameEvent ConversationEnded;
     public GameEvent ConversationStarted;
     [Space]
@@ -209,10 +210,9 @@ public class DialogueManager : MonoBehaviour
         {
             Debug.Log("Raise Events");
             option.consequence.Raise();
-
         }
         currentSentence = option.nextSentence;
-       
+        sidePrompt.InvokeTween(false);
         DisplayDialogue();
     }
 

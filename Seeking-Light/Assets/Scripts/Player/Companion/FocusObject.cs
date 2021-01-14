@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FocusObject : MonoBehaviour
 {
@@ -9,9 +10,23 @@ public class FocusObject : MonoBehaviour
     [SerializeField] private bool canFocus = false;
     [SerializeField] private bool shouldReveal = false;
 
+    [SerializeField] private bool shouldShowMessage = false;
+    [SerializeField] private DoTweener promptTween;
+    [SerializeField] private Text promptText;
+    [TextArea(1,3)]
+    [SerializeField] private string messageToDisplay;
+
     private bool effectPlayed = false;
     [SerializeField] private ParticleSystem sparkleEffect;
     [SerializeField] private ParticleSystem revealEffect;
+
+    void Start()
+    {
+        if(shouldShowMessage == true)
+        {
+            promptText = promptTween.gameObject.GetComponent<Text>();
+        }
+    }
 
     public bool ShouldReveal
     {
@@ -50,6 +65,13 @@ public class FocusObject : MonoBehaviour
         if (effectPlayed == false)
         {
             //PLAY SOME EFFECT, REVEAL SOMETHING!
+            if(shouldShowMessage == true)
+            {
+                promptTween.InvokeTween(false);
+                promptText.text = messageToDisplay;
+                shouldShowMessage = false;
+            }
+
             sparkleEffect.Stop();
             SoundManager.Play2DSound(SoundManager.Sound.SecretRevealed, 4f, .2f);
             revealEffect.Play();

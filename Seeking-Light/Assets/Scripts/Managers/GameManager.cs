@@ -55,4 +55,13 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void disableSection(GameObject _sectionToDisable)
+    {
+        _sectionToDisable.SetActive(false);
+    }
+
+    public void enableSection(GameObject _sectionToEnable)
+    {
+        _sectionToEnable.SetActive(true);
+    }
 }

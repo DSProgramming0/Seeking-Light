@@ -7,6 +7,7 @@ public class Parallax : MonoBehaviour
     private float length, startpos;
     public GameObject player;
     public float parallaxEffect;
+    [SerializeField] private bool shouldLoop = false;
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +24,11 @@ public class Parallax : MonoBehaviour
 
         transform.position = new Vector3(startpos + distance, transform.position.y, transform.position.z);
 
-        if (temp > startpos + length) startpos += length;
-        else if (temp < startpos - length) startpos -= length;
+        if (!shouldLoop)
+        {
+            if (temp > startpos + length) startpos += length;
+            else if (temp < startpos - length) startpos -= length;
+        }
+        
     }
 }

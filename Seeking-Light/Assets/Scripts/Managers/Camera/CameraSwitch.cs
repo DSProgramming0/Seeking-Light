@@ -8,7 +8,9 @@ public class CameraSwitch : MonoBehaviour
     [SerializeField] private ParticleSystemManager _particles;
     [SerializeField] private int currentParticleEffect = 0;
 
-    public int cameraID;
+  
+
+    public int cameraID;   
 
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -32,13 +34,11 @@ public class CameraSwitch : MonoBehaviour
                     break;
             }
         }
-    }
-
-    
+    }    
 
     private void passCameraID()
     {
-        UIManager.instance.fadeout();
-        cameraControl.SetInteger("CameraID", cameraID);
+        //UIManager.instance.fadeout();
+        cameraControl.SetInteger("CameraID", cameraID);      
     }
 }
