@@ -18,6 +18,9 @@ public class CompanionControl : MonoBehaviour
     private List<Vector3> storedPositions;
     [SerializeField] private Vector3 offset;
 
+    [SerializeField] private StalkerEnemy stalkerEnemy;
+    [SerializeField] private float stalkerDistThreshold;
+
     [Header("Focusing")]
     [SerializeField] private FocusObject currentFocusObj;
     [SerializeField] private float focusMeter = 0f;
@@ -41,6 +44,16 @@ public class CompanionControl : MonoBehaviour
 
     void Update()
     {
+        float distToStalker = Vector2.Distance(transform.position, stalkerEnemy.transform.position);
+        if(distToStalker <= stalkerDistThreshold)
+        {
+            stalkerEnemy.PlayerIsHoldingBack = true;
+        }
+        else
+        {
+            stalkerEnemy.PlayerIsHoldingBack = false;
+        }
+
         focusMeter = Mathf.Clamp(focusMeter, 0, 100);
 
         Movement();
@@ -139,7 +152,7 @@ public class CompanionControl : MonoBehaviour
                 focusMeter = 0;
             }
         }
-    }
+    } 
 
     public void switchControl() //Controls the state of the companion, Whether the player has control or not
     {

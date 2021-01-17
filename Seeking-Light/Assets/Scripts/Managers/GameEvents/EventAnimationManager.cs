@@ -47,5 +47,7 @@ public class EventAnimationManager : MonoBehaviour
         light2.GetComponent<Light2D>().enabled = true;
         light2.GetComponent<LightFlicker>().enabled = true;
         SoundManager.Play3DSound(SoundManager.Sound.LightFlicker1, true, false, 0f, .2f, 90f, light2.transform.position);
+        SoundManager.Play3DSound(SoundManager.Sound.HorrorSpike1, false, true, 8f, .3f, 90f, light2.transform.position);
+
     }
 }

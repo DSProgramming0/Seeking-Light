@@ -22,8 +22,8 @@ public class GameAssets : MonoBehaviour
         }
     }
 
-    [Header("UI")]
-
+    [Header("AudioSource")]
+    public AudioSource mainAudioSource;
     [Header("Particles")]   
 
     [Header("TempEffect")]

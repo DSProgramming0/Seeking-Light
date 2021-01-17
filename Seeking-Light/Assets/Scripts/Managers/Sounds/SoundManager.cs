@@ -13,7 +13,9 @@ public static class SoundManager
 
         PlayerFootsteps,
 
-        PlayerFootstep,
+        PlayerFootstep_1_MUD,
+        PlayerFootstep_2_MUD,
+        PlayerFootstep_3_MUD,
 
         Rainfall1,
         
@@ -26,6 +28,20 @@ public static class SoundManager
         Blip1,
 
         SecretRevealed,
+
+        HorrorSpike1,
+
+        Demon_1,
+        Demon_2,
+        Demon_3,
+        Demon_4,
+        Demon_5,
+
+        Demon_Stalk_1,
+        Demon_Stalk_2,
+        Demon_Stalk_3,
+
+        Demon_Recoil_1
     }
 
     private static Dictionary<Sound, float> soundTimerDictionary;
@@ -85,6 +101,16 @@ public static class SoundManager
 
         return null;
     }
+     
+    public static void PlayStaticSound(AudioSource _mainAudioSource, Sound _clipToPlay)
+    {
+        _mainAudioSource.clip = GetAudioClip(_clipToPlay);
+        if(_mainAudioSource.isPlaying == false)
+        {
+            _mainAudioSource.Play();
+        }
+    }
+   
 
     public static void DestroySound(GameObject _soundToDestroy)
     {

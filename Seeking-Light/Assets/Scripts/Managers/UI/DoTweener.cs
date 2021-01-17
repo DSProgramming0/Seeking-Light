@@ -20,6 +20,9 @@ public class DoTweener : MonoBehaviour
     [SerializeField] private Vector2 originalSize;
     [SerializeField] private Vector2 targetSize;
 
+    [SerializeField] private float minRot;
+    [SerializeField] private float maxRot;
+
     [SerializeField] private Ease _moveEase = Ease.Linear;
 
     [SerializeField] private DoTweenType _doTweenType = DoTweenType.MovementOneWay;
@@ -30,7 +33,8 @@ public class DoTweener : MonoBehaviour
         MovementOnEvent,
         Repeat,
         AlterSizeAndHide,
-        AlterSize
+        AlterSize,
+        RotateRepeat
     }
 
     void Start()
@@ -80,6 +84,10 @@ public class DoTweener : MonoBehaviour
         {
 
             StartCoroutine(alterSize());
+        }
+        else if(_doTweenType == DoTweenType.RotateRepeat)
+        {
+            StartCoroutine(rotateRepeat());
         }
     }
 
@@ -133,5 +141,17 @@ public class DoTweener : MonoBehaviour
         yield return new WaitForSeconds(_moveDuration);
 
         StartCoroutine(Repeat());
+    }
+
+
+    private IEnumerator rotateRepeat()
+    {
+        transform.Rotate(new Vector3(transform.rotation.x, transform.rotation.y, Mathf.Lerp(transform.rotation.z, maxRot, Time.fixedDeltaTime * _moveDuration)));
+
+        yield return new WaitForSeconds(_HoldPosDuration);
+
+        transform.Rotate(new Vector3(transform.rotation.x, transform.rotation.y, Mathf.Lerp(transform.rotation.z, minRot, Time.fixedDeltaTime * _moveDuration)));
+
+        StartCoroutine(rotateRepeat());
     }
 }
