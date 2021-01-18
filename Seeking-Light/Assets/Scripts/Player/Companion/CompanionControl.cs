@@ -22,6 +22,7 @@ public class CompanionControl : MonoBehaviour
     [SerializeField] private float stalkerDistThreshold;
 
     [Header("Focusing")]
+    [SerializeField] private bool stalkerActive = false;
     [SerializeField] private FocusObject currentFocusObj;
     [SerializeField] private float focusMeter = 0f;
     [SerializeField] private Image focusMeterSprite;
@@ -43,16 +44,19 @@ public class CompanionControl : MonoBehaviour
     }
 
     void Update()
-    {
-        float distToStalker = Vector2.Distance(transform.position, stalkerEnemy.transform.position);
-        if(distToStalker <= stalkerDistThreshold)
+    {       
+        if (stalkerActive)
         {
-            stalkerEnemy.PlayerIsHoldingBack = true;
-        }
-        else
-        {
-            stalkerEnemy.PlayerIsHoldingBack = false;
-        }
+            float distToStalker = Vector2.Distance(transform.position, stalkerEnemy.transform.position);
+            if (distToStalker <= stalkerDistThreshold)
+            {
+                stalkerEnemy.PlayerIsHoldingBack = true;
+            }
+            else
+            {
+                stalkerEnemy.PlayerIsHoldingBack = false;
+            }
+        }     
 
         focusMeter = Mathf.Clamp(focusMeter, 0, 100);
 

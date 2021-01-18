@@ -8,6 +8,7 @@ public class PlayerInfo : MonoBehaviour
     public static PlayerInfo instance;
 
     [SerializeField] private bool playerHasControl = true;
+    private bool playerHasLight = false;
     private bool facingRight;
     private Vector2 dir;
     private bool isClimbing;
@@ -19,6 +20,12 @@ public class PlayerInfo : MonoBehaviour
     {
         instance = this;
         thisRB = GetComponent<Rigidbody2D>();
+    }
+
+    public bool PlayerHasLight
+    {
+        get { return playerHasLight; }
+        set { playerHasLight = value; }
     }
 
     public bool PlayerHasControl

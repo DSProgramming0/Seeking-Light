@@ -28,6 +28,9 @@ public class EventTrigger : MonoBehaviour
                     case EventList.LIGHTFLICKER_2:
                         GameEvents.instance.LightFlicker2();
                         break;
+                    case EventList.STALKERREVEAL_1:
+                        GameEvents.instance.StalkerReveal();
+                        break;
                     default:
                         break;
                 }

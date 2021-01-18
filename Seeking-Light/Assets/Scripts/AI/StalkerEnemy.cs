@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class StalkerEnemy : MonoBehaviour
 {
+    [SerializeField] private AnimHook thisAnim;
     [SerializeField] private Transform target;
     [SerializeField] private Rigidbody2D thisRB;
     [SerializeField] private stalkerState currentState;
@@ -43,7 +44,9 @@ public class StalkerEnemy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        GameEvents.instance.onLevelReset += resetEnemy;
+        GameEvents.instance.onStalkerReveal += revealStalker;
+
     }
 
     public bool PlayerIsHoldingBack
@@ -65,6 +68,7 @@ public class StalkerEnemy : MonoBehaviour
                 currentOffset = offsetFar;
                 currentSpeed = closeSpeed;
                 currentHungerMultiplier = 0;
+                thisAudioSource.enabled = false;
                 hungerMeter = 0;
                 hideEnemy(true);
                 break;
@@ -72,6 +76,7 @@ public class StalkerEnemy : MonoBehaviour
                 currentOffset = offsetFar;
                 currentSpeed = speedFar;
                 currentHungerMultiplier = hungerMultiplerFar;
+                thisAudioSource.enabled = true;
                 currentSound = SoundManager.Sound.Demon_Stalk_1;
                 currentSoundPlaying = false;
                 hideEnemy(false);              
@@ -95,6 +100,7 @@ public class StalkerEnemy : MonoBehaviour
         }
 
         thisRB.MovePosition(Vector3.Slerp(transform.position, target.position + currentOffset, currentSpeed * Time.deltaTime));
+        thisAnim.setStalkerState(true);
     }
 
     public void hungerMeterGain()
@@ -158,6 +164,7 @@ public class StalkerEnemy : MonoBehaviour
         }
         else if(currentState == stalkerState.CLOSE)
         {
+            thisAnim.triggerStalkerAttack();
             target.GetComponent<PlayerDeath>().Death();
         }
     }
@@ -180,6 +187,16 @@ public class StalkerEnemy : MonoBehaviour
             }
             thisCollider.enabled = true;
         }
+    }
+
+    private void resetEnemy()
+    {
+        currentState = stalkerState.INVISIBLE;
+    }  
+    
+    private void revealStalker()
+    {
+        currentState = stalkerState.FAR;
     }
 
     private enum stalkerState

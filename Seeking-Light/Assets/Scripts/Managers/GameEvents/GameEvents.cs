@@ -12,7 +12,48 @@ public class GameEvents : MonoBehaviour
     void Awake()
     {
         instance = this;
-    }   
+    }
+
+    //If an event has no suscribers the system will report it.
+    public event Action onLightRelease;
+    public void LightRelease()
+    {
+        if (onLightRelease != null)
+        {
+            Debug.Log("Calling event");
+            onLightRelease();
+        }
+        else
+        {
+            Debug.LogError(onLevelReset + "Has no suscribers!");
+        }
+    }
+
+    public event Action onLevelReset;
+    public void LevelReset()
+    {
+        if (onLevelReset != null)
+        {
+            onLevelReset();
+        }
+        else
+        {
+            Debug.LogError(onLevelReset + "Has no suscribers!");
+        }
+    }
+
+    public event Action onStalkerReveal;
+    public void StalkerReveal()
+    {
+        if (onStalkerReveal != null)
+        {
+            onStalkerReveal();
+        }
+        else
+        {
+            Debug.LogError(onStalkerReveal + "Has no suscribers!");
+        }
+    }
 
     //If an event has no suscribers the system will report it.
     public event Action onBinKnockover1;
@@ -62,4 +103,6 @@ public enum EventList
 
     LIGHTFLICKER_1,
     LIGHTFLICKER_2,
+
+    STALKERREVEAL_1,
 }

@@ -21,7 +21,7 @@ MonoBehaviour:
     consequence: {fileID: 11400000, guid: f1a710867ad8b4e9e8dc2042c6c1e0f4, type: 2}
   - text: Really? You're jumpy!
     nextSentence: {fileID: 11400000, guid: cd7a27a85bcab0745abda9f15a03f84f, type: 2}
-    consequence: {fileID: 0}
+    consequence: {fileID: 11400000, guid: d8710d1203545bb42b36b3462474f58d, type: 2}
   - text: How? You need to calm down.
     nextSentence: {fileID: 11400000, guid: e43bec4e40dff2f428e0b83533f6c169, type: 2}
     consequence: {fileID: 11400000, guid: 089753ccf7c6e45b2b36de43c7b86e71, type: 2}

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c5122a5ca3e24489ad816223e7ecc4e, type: 3}
+  m_Name: SolarGreeting3
+  m_EditorClassIdentifier: 
+  from: {fileID: 11400000, guid: 8be7a20f820533b4e9c57cdc49dabd2d, type: 2}
+  text: Oh my! You see me? Good! Ive been trapped in here so long
+  nextSentence: {fileID: 11400000, guid: 625a84f27c139cc4f94b2328e3b686d9, type: 2}
+  options: []

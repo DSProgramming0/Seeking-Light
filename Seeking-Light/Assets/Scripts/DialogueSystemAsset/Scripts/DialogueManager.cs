@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class DialogueManager : MonoBehaviour
 {
     [Header("GameEvents")]
+    [SerializeField] private AnimHook currentAnim;
     [SerializeField] private DoTweener sidePrompt;
     public GameEvent ConversationEnded;
     public GameEvent ConversationStarted;
@@ -33,7 +34,7 @@ public class DialogueManager : MonoBehaviour
     DialogueSO dialogue;
     Sentence currentSentence;  
 
-    public void StartDialogue(DialogueSO dialogueSO)
+    public void StartDialogue(DialogueSO dialogueSO, AnimHook _currentAnim)
     {
         if (!dialogueSO.isAvailable)
         {
@@ -45,6 +46,12 @@ public class DialogueManager : MonoBehaviour
         }
         //animator.SetTrigger("InDialogue");
 
+        if(_currentAnim != null)
+        {
+            currentAnim = _currentAnim;
+            currentAnim.startNPCconverstation();
+        }
+        
         PlayerStates.instance.currentConverstaionState = PlayerConverstaionStates.IN_CONVERSATION;
         playerTextUI.text = null;
         npcTextUI.text = null;
@@ -63,6 +70,10 @@ public class DialogueManager : MonoBehaviour
 
     public void GoToNextSentence()
     {
+        if(currentSentence == null)
+        {
+            EndDialogue();
+        }
         currentSentence = currentSentence.nextSentence;
         DisplayDialogue();
     }
@@ -256,8 +267,15 @@ public class DialogueManager : MonoBehaviour
 
         if (ConversationEnded!=null)
         {
+            if (currentAnim != null)
+            {
+                currentAnim.endNPConverstaion();
+            }
+
             ConversationEnded.Raise();
             PlayerStates.instance.currentConverstaionState = PlayerConverstaionStates.NOT_IN_CONVERSATION;
+
+            currentAnim = null;
 
         }
 

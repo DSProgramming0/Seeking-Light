@@ -123,8 +123,9 @@ public class PlayerDeath : MonoBehaviour
         UIManager.instance.fadeout(); //Fades the screen while the player is being reset
         yield return new WaitForSeconds(1f);
 
-        RespawnManager.instance.StartRespawn(); 
-        
+        RespawnManager.instance.StartRespawn();
+        GameEvents.instance.LevelReset();
+
         ragdollBody.SetActive(false); //Disables ragdoll body
 
         #region re enabling player original body

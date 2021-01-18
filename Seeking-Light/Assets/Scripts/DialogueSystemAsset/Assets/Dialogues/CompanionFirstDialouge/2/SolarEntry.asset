@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c5122a5ca3e24489ad816223e7ecc4e, type: 3}
+  m_Name: SolarEntry
+  m_EditorClassIdentifier: 
+  from: {fileID: 11400000, guid: 8be7a20f820533b4e9c57cdc49dabd2d, type: 2}
+  text: You got me out! Im so thankful!
+  nextSentence: {fileID: 11400000, guid: d7dfc17172a9f9343b40ea5e2750f968, type: 2}
+  options: []

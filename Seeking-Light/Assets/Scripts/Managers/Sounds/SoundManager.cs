@@ -41,7 +41,11 @@ public static class SoundManager
         Demon_Stalk_2,
         Demon_Stalk_3,
 
-        Demon_Recoil_1
+        Demon_Recoil_1,
+
+
+
+        MetallicCrash1
     }
 
     private static Dictionary<Sound, float> soundTimerDictionary;

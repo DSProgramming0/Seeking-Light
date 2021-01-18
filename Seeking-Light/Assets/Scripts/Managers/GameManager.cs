@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     [SerializeField] private List<GameObject> GameObjectsToReset;
+    [SerializeField] private GameObject companion;
+    [SerializeField] private GameObject companionTemp;
 
     // Start is called before the first frame update
     void Awake()
@@ -63,5 +65,5 @@ public class GameManager : MonoBehaviour
     public void enableSection(GameObject _sectionToEnable)
     {
         _sectionToEnable.SetActive(true);
-    }
+    }    
 }

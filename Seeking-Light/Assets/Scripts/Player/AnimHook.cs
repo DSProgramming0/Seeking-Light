@@ -85,4 +85,26 @@ public class AnimHook : MonoBehaviour
     {
         thisAnimator.SetBool("canClimbLedge", _canClimb);
     }
+
+    public void setStalkerState(bool isMoving)
+    {
+        thisAnimator.SetBool("IsMoving", isMoving);
+    }
+
+    public void triggerStalkerAttack()
+    {
+        thisAnimator.SetTrigger("attack");
+    }
+
+    public void startNPCconverstation()
+    {
+        thisAnimator.SetTrigger("StartTalking");
+        thisAnimator.SetBool("IsTalking", true);
+    }
+
+    public void endNPConverstaion()
+    {
+        thisAnimator.SetTrigger("EndTalking");
+        thisAnimator.SetBool("IsTalking", false);
+    }
 }

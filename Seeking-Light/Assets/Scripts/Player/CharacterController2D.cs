@@ -418,6 +418,7 @@ public class CharacterController2D : MonoBehaviour
 
     public void FinishLedgeClimb()
     {
+        Debug.Log("Finishing Ledge climb");
         canClimbLedge = false;
         transform.position = ledgePos2;
         PlayerInfo.instance.PlayerHasControl = true;

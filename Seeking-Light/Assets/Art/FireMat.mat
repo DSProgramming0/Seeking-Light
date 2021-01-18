@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: FireMat
+  m_Shader: {fileID: -6465566751694194690, guid: 2bf44a5017546e74fa61377f860c8418, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_60C2B110:
+        m_Texture: {fileID: 2800000, guid: b43c5e43b856c3646a14a46f88dc9d3f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_6F8D8C5B:
+        m_Texture: {fileID: 2800000, guid: 556d31f1c98209c4ca880822b7a373e6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_30D4757A: 0.1
+    m_Colors:
+    - Color_7671BE84: {r: 0, g: 0, b: 0, a: 1}
+    - Vector2_34DC0D: {r: 0, g: 0.4, b: 0, a: 0}
+    - Vector2_9C2BDEF9: {r: -0.5, g: 0.5, b: 0, a: 0}
+  m_BuildTextureStacks: []

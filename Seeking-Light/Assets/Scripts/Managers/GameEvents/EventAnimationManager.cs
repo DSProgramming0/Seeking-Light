@@ -14,13 +14,43 @@ public class EventAnimationManager : MonoBehaviour
     [SerializeField] private GameObject light1;
     [SerializeField] private GameObject light2;
 
+    [Header("Releasing Light Event")]
+    [SerializeField] private GameObject playerCompanion;
+    [SerializeField] private Animator releasedLightAnim;
+    [SerializeField] private List<Joint2D> cageHingeJoints;
+    [SerializeField] private Transform setPoint;
+    [SerializeField] private List<DialogueTrigger> LightBuddyDialogs;
+
 
     void Start() //Suscribe methods here
     {
         GameEvents.instance.onBinKnockover1 += bin1Knockover;
         GameEvents.instance.onLightFlicker1 += light1Flicker;
         GameEvents.instance.onLightFlicker2 += light2Flicker;
+        GameEvents.instance.onStalkerReveal += revealStalker1;
+        GameEvents.instance.onLightRelease += lightRelease;
 
+    }
+
+    private void lightRelease()
+    {
+        foreach (Joint2D joint in cageHingeJoints)
+        {
+            Destroy(joint);
+        }
+
+        releasedLightAnim.transform.parent = setPoint;
+        releasedLightAnim.SetTrigger("released");
+
+        LightBuddyDialogs[0].ConversationExpended = true;
+        LightBuddyDialogs[1].ConversationExpended = false;
+    }
+
+    public void enableLightCompanion()
+    {
+        PlayerInfo.instance.PlayerHasLight = true;
+        playerCompanion.SetActive(true);
+        Destroy(releasedLightAnim.gameObject);
     }
 
     private void bin1Knockover() 
@@ -48,6 +78,10 @@ public class EventAnimationManager : MonoBehaviour
         light2.GetComponent<LightFlicker>().enabled = true;
         SoundManager.Play3DSound(SoundManager.Sound.LightFlicker1, true, false, 0f, .2f, 90f, light2.transform.position);
         SoundManager.Play3DSound(SoundManager.Sound.HorrorSpike1, false, true, 8f, .3f, 90f, light2.transform.position);
+    }
 
+    private void revealStalker1()
+    {
+        SoundManager.Play2DSound(SoundManager.Sound.HorrorSpike1, 5f, 1f);
     }
 }

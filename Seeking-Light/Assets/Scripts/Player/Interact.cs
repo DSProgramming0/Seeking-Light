@@ -19,8 +19,11 @@ public class Interact : MonoBehaviour
                 break;
             case ThisInteractionIs.SWITCH:
                 Debug.Log("switch pressed");
-
                 doorToOpen.toggleDoor();
+                break;
+            case ThisInteractionIs.CAGE:
+                Debug.Log("switch pressed");
+                GameEvents.instance.LightRelease();
                 break;
             default:
                 Debug.LogError("Interaction state not set!!");
@@ -32,6 +35,7 @@ public class Interact : MonoBehaviour
 public enum ThisInteractionIs
 {
     DIALOGUE,
-    SWITCH
+    SWITCH,
+    CAGE
 }
 
