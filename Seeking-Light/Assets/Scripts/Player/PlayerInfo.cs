@@ -8,6 +8,7 @@ public class PlayerInfo : MonoBehaviour
     public static PlayerInfo instance;
 
     [SerializeField] private bool playerHasControl = true;
+    [SerializeField] private bool playerIsGrounded;
     private bool playerHasLight = false;
     private bool facingRight;
     private Vector2 dir;
@@ -20,6 +21,12 @@ public class PlayerInfo : MonoBehaviour
     {
         instance = this;
         thisRB = GetComponent<Rigidbody2D>();
+    }
+
+    public bool PlayerIsGrounded
+    {
+        get { return playerIsGrounded; }
+        set { playerIsGrounded = value; }
     }
 
     public bool PlayerHasLight

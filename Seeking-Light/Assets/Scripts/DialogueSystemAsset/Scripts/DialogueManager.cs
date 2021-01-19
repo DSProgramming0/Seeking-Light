@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -18,16 +19,14 @@ public class DialogueManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private bool isTyping = false;
     [SerializeField] private Button continueButton;
-    [SerializeField] private Text continueButtonText;
-    public Text playerNameTxtUI;
-    public Text npcNameTextUI;
-    public Text playerTextUI;
-    public Text npcTextUI;
+    [SerializeField] private TextMeshProUGUI continueButtonText;
+    public TextMeshProUGUI speakerNameTxtUI;
+    public TextMeshProUGUI speakerTextUI;
 
     [Tooltip("The part of UI that display the UI")]
     public GameObject DialogueUI;
     [Tooltip("The text UIs that display options")]
-    public Text[] optionsUI;
+    public TextMeshProUGUI[] optionsUI;
     [SerializeField] private int currentOptionIndex = 0;
     [SerializeField] private GameObject currentOptionHighlight;
 
@@ -53,15 +52,15 @@ public class DialogueManager : MonoBehaviour
         }
         
         PlayerStates.instance.currentConverstaionState = PlayerConverstaionStates.IN_CONVERSATION;
-        playerTextUI.text = null;
-        npcTextUI.text = null;
+        speakerTextUI.text = null;
+        speakerTextUI.text = null;
         HideOptions();
         DialogueUI.SetActive(false);
         
         dialogue = dialogueSO;
-        if (playerNameTxtUI!=null)
+        if (speakerNameTxtUI!=null)
         {
-            playerNameTxtUI.text = playerName.Value;
+            speakerNameTxtUI.text = playerName.Value + ":";
         }
         currentSentence = dialogue.startingSentence;
 
@@ -92,25 +91,25 @@ public class DialogueManager : MonoBehaviour
             HideOptions();
             // sentence with no options
             // can either be from player or npc
-            Text dialogueText;
+            TextMeshProUGUI dialogueText;
             if (currentSentence.from.Value == playerName.Value)
             {
                 // from player, set the textbox
-                if (playerNameTxtUI != null)
+                if (speakerNameTxtUI != null)
                 {
-                    playerNameTxtUI.text = playerName.Value;
+                    speakerNameTxtUI.text = playerName.Value + ":";
                 }
-                dialogueText = playerTextUI;
+                dialogueText = speakerTextUI;
             }
             else
             {
                 // from npc
-                if (npcNameTextUI != null)
+                if (speakerNameTxtUI != null)
                 {
-                    npcNameTextUI.text = currentSentence.from.name;
+                    speakerNameTxtUI.text = currentSentence.from.name + ":";
 
                 }
-                dialogueText = npcTextUI;
+                dialogueText = speakerTextUI;
             }
 
             // display the text
@@ -129,7 +128,7 @@ public class DialogueManager : MonoBehaviour
         checkMenuInput();
     }
 
-    IEnumerator Typeout(string sentence, Text textbox)
+    IEnumerator Typeout(string sentence, TextMeshProUGUI textbox)
     {
         textbox.text = "";
         foreach (var letter in sentence.ToCharArray())
@@ -235,9 +234,9 @@ public class DialogueManager : MonoBehaviour
         if (currentSentence.from.Value == playerName.Value)
         {
             // from player, set the textbox
-            if (playerNameTxtUI != null)
+            if (speakerNameTxtUI != null)
             {
-                playerNameTxtUI.text = playerName.Value;
+                speakerNameTxtUI.text = playerName.Value + ":";
             }
         }
 
@@ -254,7 +253,7 @@ public class DialogueManager : MonoBehaviour
 
     public void HideOptions()
     {
-        foreach (Text option in optionsUI)
+        foreach (TextMeshProUGUI option in optionsUI)
         {
             option.gameObject.SetActive(false);
         }

@@ -9,7 +9,6 @@ public class CharacterController2D : MonoBehaviour
     private Rigidbody2D rb;
     [SerializeField] private AnimHook thisAnim;
     [SerializeField] private PlayerDeath playerDeath;
-
     [Header("Ground and ceiling checks")]
     const float k_GroundedRadius = 1.1f; // Radius of the overlap circle to determine if grounded
     [SerializeField]	private bool m_Grounded = true;            // Whether or not the player is grounded.
@@ -118,8 +117,12 @@ public class CharacterController2D : MonoBehaviour
 
     void Update()
     {
+        PlayerInfo.instance.PlayerIsGrounded = m_Grounded;
+
         if (PlayerInfo.instance.PlayerHasControl)
         {
+            rb.bodyType = RigidbodyType2D.Dynamic;
+
             //Debug.Log("Player has control");
             if (PlayerStates.instance.currentPlayerInteractionState != PlayerInteractionStates.INTERACTING)
             {
@@ -136,6 +139,7 @@ public class CharacterController2D : MonoBehaviour
             //Debug.Log("Player does not have control");
             stopMovement();
             thisAnim.setPlayerSpeed(0);
+            rb.bodyType = RigidbodyType2D.Static;
         }    
 
     }

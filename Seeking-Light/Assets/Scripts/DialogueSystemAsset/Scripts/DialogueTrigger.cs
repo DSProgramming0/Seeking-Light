@@ -23,7 +23,7 @@ public class DialogueTrigger : MonoBehaviour
     {
         if(ConversationExpended == false)
         {
-            if (collision.CompareTag("Player"))
+            if (collision.CompareTag("Player") && PlayerInfo.instance.PlayerIsGrounded)
             {
                 if (requiresInteractionPress)
                 {
