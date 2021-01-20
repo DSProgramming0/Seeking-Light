@@ -14,8 +14,22 @@ public class GameEvents : MonoBehaviour
         instance = this;
     }
 
+    public event Action onCameraShake;
+    public void CameraShake()
+    {
+        if (onCameraShake != null)
+        {
+            Debug.Log("CameraShaking called");
+            onCameraShake();
+        }
+        else
+        {
+            Debug.LogError(onCameraShake + "Has no suscribers!");
+        }
+    }
+
     //If an event has no suscribers the system will report it.
-    public event Action onLightRelease;
+    public event Action onLightRelease; //First interaction between player and companion
     public void LightRelease()
     {
         if (onLightRelease != null)
@@ -29,7 +43,21 @@ public class GameEvents : MonoBehaviour
         }
     }
 
-    public event Action onLevelReset;
+    public event Action onCrossFall; //First interaction between player and companion
+    public void CrossFall()
+    {
+        if (onLightRelease != null)
+        {
+            Debug.Log("Calling event");
+            onCrossFall();
+        }
+        else
+        {
+            Debug.LogError(onCrossFall + "Has no suscribers!");
+        }
+    }
+
+    public event Action onLevelReset; //Things that need to reset after player dies
     public void LevelReset()
     {
         if (onLevelReset != null)
@@ -42,7 +70,7 @@ public class GameEvents : MonoBehaviour
         }
     }
 
-    public event Action onStalkerReveal;
+    public event Action onStalkerReveal; //When the stalker enemy reveals itself
     public void StalkerReveal()
     {
         if (onStalkerReveal != null)
@@ -105,4 +133,6 @@ public enum EventList
     LIGHTFLICKER_2,
 
     STALKERREVEAL_1,
+
+    CROSSFALL,
 }

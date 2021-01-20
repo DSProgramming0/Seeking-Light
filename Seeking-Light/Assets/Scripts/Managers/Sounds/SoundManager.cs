@@ -43,9 +43,10 @@ public static class SoundManager
 
         Demon_Recoil_1,
 
+        MetallicCrash1,
 
-
-        MetallicCrash1
+        Whispers_1,
+        Whispers_2,
     }
 
     private static Dictionary<Sound, float> soundTimerDictionary;
@@ -73,17 +74,17 @@ public static class SoundManager
         }        
     }
 
-    public static AudioSource Play3DSound(Sound clipToPlay, bool shouldLoop, bool shouldDestroy, float destroyDelayTime, float _volume, float _range, Vector3 position)
+    public static AudioSource Play3DSound(Sound clipToPlay, bool shouldLoop, bool shouldDestroy, float destroyDelayTime, float _volume, float _spatialBlend, float _range, Vector3 position)
     {
         if (canPlaySound(clipToPlay))
         {
-
             GameObject soundGameObject = new GameObject("Sound");
             soundGameObject.transform.position = position;
             AudioSource audioSource = soundGameObject.AddComponent<AudioSource>();
             audioSource.volume = _volume;
             audioSource.panStereo = 0;
-            audioSource.spatialBlend = 1f;
+            audioSource.spatialBlend = 1;
+            audioSource.dopplerLevel = 0;
             audioSource.maxDistance = _range;
             audioSource.rolloffMode = AudioRolloffMode.Linear;
            

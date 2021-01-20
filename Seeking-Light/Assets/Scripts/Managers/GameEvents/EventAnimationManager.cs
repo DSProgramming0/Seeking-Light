@@ -21,15 +21,17 @@ public class EventAnimationManager : MonoBehaviour
     [SerializeField] private Transform setPoint;
     [SerializeField] private List<DialogueTrigger> LightBuddyDialogs;
 
+    [Header("Game Objects, Transforms & RB's")]
+    [SerializeField] private Transform deadBody1;
+    [SerializeField] private Rigidbody2D fallingCross;
 
     void Start() //Suscribe methods here
     {
         GameEvents.instance.onBinKnockover1 += bin1Knockover;
         GameEvents.instance.onLightFlicker1 += light1Flicker;
         GameEvents.instance.onLightFlicker2 += light2Flicker;
-        GameEvents.instance.onStalkerReveal += revealStalker1;
         GameEvents.instance.onLightRelease += lightRelease;
-
+        GameEvents.instance.onCrossFall += callCrossFall;
     }
 
     private void lightRelease()
@@ -58,7 +60,7 @@ public class EventAnimationManager : MonoBehaviour
         Debug.Log("Bin knocked over");
         bin1.SetTrigger("Knockover");
         AudioSource binAudioSource = bin1.GetComponent<AudioSource>();
-        SoundManager.Play3DSound(SoundManager.Sound.BinKnockover1, false, true, 6f, .4f, 70f, bin1.transform.position);
+        SoundManager.Play3DSound(SoundManager.Sound.BinKnockover1, false, true, 6f, .4f, 1f, 70f, bin1.transform.position);
 
         GameEvents.instance.onBinKnockover1 -= bin1Knockover;
     }
@@ -68,7 +70,7 @@ public class EventAnimationManager : MonoBehaviour
         Debug.Log("Light is flickering");
         light1.GetComponent<Light2D>().enabled = true;
         light1.GetComponent<LightFlicker>().enabled = true;
-        SoundManager.Play3DSound(SoundManager.Sound.LightFlicker1, true, false, 0f, .2f, 90f, light1.transform.position);
+        SoundManager.Play3DSound(SoundManager.Sound.LightFlicker1, true, false, 0f, .2f, 1f, 90f, light1.transform.position);
     }
 
     private void light2Flicker()
@@ -76,12 +78,22 @@ public class EventAnimationManager : MonoBehaviour
         Debug.Log("Light is flickering");
         light2.GetComponent<Light2D>().enabled = true;
         light2.GetComponent<LightFlicker>().enabled = true;
-        SoundManager.Play3DSound(SoundManager.Sound.LightFlicker1, true, false, 0f, .2f, 90f, light2.transform.position);
-        SoundManager.Play3DSound(SoundManager.Sound.HorrorSpike1, false, true, 8f, .3f, 90f, light2.transform.position);
+        SoundManager.Play3DSound(SoundManager.Sound.LightFlicker1, true, false, 0f, .2f, 1f,  90f, light2.transform.position);
+        SoundManager.Play3DSound(SoundManager.Sound.HorrorSpike1, false, true, 8f, .3f, 0f, 90f, light2.transform.position);
+    }   
+
+    private void callCrossFall()
+    {
+        StartCoroutine(crossFall());
     }
 
-    private void revealStalker1()
+    private  IEnumerator crossFall()
     {
-        SoundManager.Play2DSound(SoundManager.Sound.HorrorSpike1, 5f, 1f);
+        fallingCross.bodyType = RigidbodyType2D.Dynamic;
+
+        yield return new WaitForSeconds(3f);
+        fallingCross.gameObject.GetComponent<PolygonCollider2D>().isTrigger = true;
+        fallingCross.bodyType = RigidbodyType2D.Static;
+        fallingCross.simulated = false;
     }
 }

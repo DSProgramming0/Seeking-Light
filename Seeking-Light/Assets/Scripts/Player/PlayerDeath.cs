@@ -39,10 +39,10 @@ public class PlayerDeath : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            Death();
-        }
+        //if (Input.GetKeyDown(KeyCode.F))
+        //{
+        //    Death();
+        //}
     }
 
     public void Death()

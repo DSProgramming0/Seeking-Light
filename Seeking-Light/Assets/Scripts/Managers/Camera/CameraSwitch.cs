@@ -1,14 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class CameraSwitch : MonoBehaviour
 {
+    [SerializeField] private CameraEffectsController vCamEffects;
     [SerializeField] private Animator cameraControl;
     [SerializeField] private ParticleSystemManager _particles;
     [SerializeField] private int currentParticleEffect = 0;
 
-  
+    private CinemachineVirtualCamera thisVcam;
+    private CinemachineBasicMultiChannelPerlin thisVcamEffects;
+
+    void Awake()
+    {
+        vCamEffects = GetComponentInParent<CameraEffectsController>();
+        thisVcam = GetComponent<CinemachineVirtualCamera>();
+        thisVcamEffects = thisVcam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+    }
 
     public int cameraID;   
 
@@ -39,6 +49,7 @@ public class CameraSwitch : MonoBehaviour
     private void passCameraID()
     {
         //UIManager.instance.fadeout();
-        cameraControl.SetInteger("CameraID", cameraID);      
+        cameraControl.SetInteger("CameraID", cameraID);
+        vCamEffects.setCurrentCam(thisVcam, thisVcamEffects);
     }
 }

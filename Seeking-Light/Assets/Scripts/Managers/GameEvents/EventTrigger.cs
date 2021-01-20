@@ -31,6 +31,9 @@ public class EventTrigger : MonoBehaviour
                     case EventList.STALKERREVEAL_1:
                         GameEvents.instance.StalkerReveal();
                         break;
+                    case EventList.CROSSFALL:
+                        GameEvents.instance.CrossFall();
+                        break;
                     default:
                         break;
                 }

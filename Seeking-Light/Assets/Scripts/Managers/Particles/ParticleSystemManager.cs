@@ -53,7 +53,7 @@ public class ParticleSystemManager : MonoBehaviour
 
                 if(soundPlaying == false)
                 {
-                    rainSound =  SoundManager.Play3DSound(SoundManager.Sound.Rainfall1, true, false, 0, .3f, 140f, particleSystems[1].transform.position);
+                    rainSound =  SoundManager.Play3DSound(SoundManager.Sound.Rainfall1, true, false, 0, .3f, 0f, 300f, particleSystems[1].transform.position);
                     rainSound.transform.parent = particleSystems[1].transform;
                     soundPlaying = true;
                 }
