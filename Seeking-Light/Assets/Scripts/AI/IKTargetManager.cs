@@ -135,9 +135,9 @@ public class IKTargetManager : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Gizmos.DrawRay(rayPoint2.position, Vector2.up * rayDistance);
-        Gizmos.DrawRay(rayPoint2.position, -Vector2.up * rayDistance);
-        Gizmos.DrawRay(rayPoint1.position, Vector2.up * rayDistance);
-        Gizmos.DrawRay(rayPoint1.position, -Vector2.up * rayDistance);
+        //Gizmos.DrawRay(rayPoint2.position, Vector2.up * rayDistance);
+        //Gizmos.DrawRay(rayPoint2.position, -Vector2.up * rayDistance);
+        //Gizmos.DrawRay(rayPoint1.position, Vector2.up * rayDistance);
+        //Gizmos.DrawRay(rayPoint1.position, -Vector2.up * rayDistance);
     }
 }
