@@ -6,6 +6,7 @@ TagManager:
   tags:
   - InteractableObj
   - MoveableObj
+  - IgnoreBoneDraw
   layers:
   - Default
   - TransparentFX
@@ -24,7 +25,7 @@ TagManager:
   - Ledge
   - canFocus
   - Ground
-  - 
+  - Ground3D
   - 
   - 
   - 

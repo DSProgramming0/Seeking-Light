@@ -24,7 +24,8 @@ public class GameAssets : MonoBehaviour
 
     [Header("AudioSource")]
     public AudioSource mainAudioSource;
-    [Header("Particles")]   
+    [Header("GameObjects")]
+    public GameObject interactKeyPrompt;
 
     [Header("TempEffect")]
 

@@ -24,6 +24,13 @@ public class SwapAmbientSound : MonoBehaviour
                     case AmbientSoundType.Ambience_1:
                         SoundManager.PlayStaticSound(GameAssets.instance.mainAudioSource, SoundManager.Sound.Ambience1);
                         break;
+                    case AmbientSoundType.KidsPlaying:
+                        SoundManager.PlayStaticSound(GameAssets.instance.mainAudioSource, SoundManager.Sound.KidsPlaying);
+                        break;
+                    case AmbientSoundType.KidCrying:
+                        SoundManager.PlayStaticSound(GameAssets.instance.mainAudioSource, SoundManager.Sound.KidsCrying);
+
+                        break;
                     default:
                         break;
                 }
@@ -38,6 +45,9 @@ public class SwapAmbientSound : MonoBehaviour
         Whispers_1,
         Whispers_2,
         
-        Ambience_1
+        Ambience_1,
+
+        KidsPlaying,
+        KidCrying
     }
 }

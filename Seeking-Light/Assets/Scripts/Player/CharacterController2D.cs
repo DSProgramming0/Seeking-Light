@@ -10,9 +10,11 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private AnimHook thisAnim;
     [SerializeField] private PlayerDeath playerDeath;
     [Header("Ground and ceiling checks")]
+    [SerializeField] private Transform resetPoint;
     const float k_GroundedRadius = 1.1f; // Radius of the overlap circle to determine if grounded
-    [SerializeField]	private bool m_Grounded = true;            // Whether or not the player is grounded.
-	const float k_CeilingRadius = .2f; // Radius of the overlap circle to determine if the player can stand up  
+    [SerializeField] private bool m_Grounded = true;            // Whether or not the player is grounded.
+    [SerializeField] private float notGroundedTimer = 0f;
+    const float k_CeilingRadius = .2f; // Radius of the overlap circle to determine if the player can stand up  
     [SerializeField] private PhysicsMaterial2D slipMaterial;
     [SerializeField] private PhysicsMaterial2D noSlipMaterial;
     [SerializeField] private LayerMask m_WhatIsGround;          // A mask determining what is ground to the character
@@ -70,6 +72,7 @@ public class CharacterController2D : MonoBehaviour
     private Vector2 ledgePosBot;
     private Vector2 ledgePos1;
     private Vector2 ledgePos2;
+    private bool justClimbedLedge;
     private bool isTouchingWall;
     private bool isTouchingLedge;
     private bool canClimbLedge = false;
@@ -318,6 +321,7 @@ public class CharacterController2D : MonoBehaviour
     {
         bool wasGrounded = m_Grounded;
         m_Grounded = false;
+        notGroundedTimer += Time.deltaTime;
         jump = true;
         thisAnim.setJumpingState(true);
         thisAnim.setGroundBool(m_Grounded);     
@@ -337,7 +341,16 @@ public class CharacterController2D : MonoBehaviour
                     OnLandEvent.Invoke();
 
             }
-        }         
+        }        
+        
+        if(notGroundedTimer >= .8f && justClimbedLedge == true)
+        {
+            transform.position = resetPoint.position;
+            thisAnim.resetPose(true);
+            notGroundedTimer = 0f;
+            justClimbedLedge = false;
+            Debug.Log("Reset required, player may be stuck");
+        }
 
         if(m_Grounded == false)
         {
@@ -346,6 +359,9 @@ public class CharacterController2D : MonoBehaviour
         else
         {
             CollidersToDisable[1].sharedMaterial = noSlipMaterial;
+            notGroundedTimer = 0f;
+            thisAnim.resetPose(false);
+            justClimbedLedge = false; 
         }
     }
     #endregion
@@ -423,6 +439,7 @@ public class CharacterController2D : MonoBehaviour
     public void FinishLedgeClimb()
     {
         Debug.Log("Finishing Ledge climb");
+        justClimbedLedge = true;
         canClimbLedge = false;
         transform.position = ledgePos2;
         PlayerInfo.instance.PlayerHasControl = true;

@@ -47,6 +47,9 @@ public static class SoundManager
 
         Whispers_1,
         Whispers_2,
+
+        KidsPlaying,
+        KidsCrying
     }
 
     private static Dictionary<Sound, float> soundTimerDictionary;

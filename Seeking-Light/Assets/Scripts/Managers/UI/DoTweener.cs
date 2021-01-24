@@ -31,6 +31,7 @@ public class DoTweener : MonoBehaviour
         MovementOneWay,
         MovementTwoWay,
         MovementOnEvent,
+        MoveAndWait,
         Repeat,
         AlterSizeAndHide,
         AlterSize,
@@ -39,6 +40,8 @@ public class DoTweener : MonoBehaviour
 
     void Start()
     {
+        DOTween.SetTweensCapacity(100000, 100000);
+
         if (showOnStart)
         {
             InvokeTween(false);
@@ -66,6 +69,12 @@ public class DoTweener : MonoBehaviour
             if (_targetLocation == Vector2.zero)
                 _targetLocation = transform.position;
             MoveOnEvent(shouldMoveOnEvent);
+        }
+        else if (_doTweenType == DoTweenType.MoveAndWait)
+        {
+            if (_targetLocation == Vector2.zero)
+                _targetLocation = transform.position;
+            StartCoroutine(moveAndWait());
         }
         else if (_doTweenType == DoTweenType.Repeat)
         {
@@ -130,6 +139,36 @@ public class DoTweener : MonoBehaviour
         {
             rectTrans.DOAnchorPos(originalLocation, _moveDuration, false).SetEase(_moveEase);
         }
+    }
+
+    public void toggleCanMoveBack(bool _shouldShow)
+    {
+        if (_shouldShow)
+        {
+            canMoveBack = true;
+        }
+        else
+        {
+            canMoveBack = false;
+        }
+    }
+
+    private IEnumerator moveAndWait()
+    {
+        RectTransform rectTrans = transform.GetComponent<RectTransform>();
+        CanvasGroup thisCanvas = transform.GetComponentInParent<CanvasGroup>();
+        if(canMoveBack == false)
+        {
+            rectTrans.DOAnchorPos(_targetLocation, _moveDuration, false).SetEase(_moveEase);
+            thisCanvas.alpha += 0.2f * Time.deltaTime;
+        }       
+
+        yield return new WaitUntil(() => canMoveBack == true);
+
+        rectTrans.DOAnchorPos(originalLocation, _moveDuration, false).SetEase(_moveEase);
+        thisCanvas.alpha -= 0.4f * Time.deltaTime;
+
+
     }
 
     private IEnumerator Repeat()

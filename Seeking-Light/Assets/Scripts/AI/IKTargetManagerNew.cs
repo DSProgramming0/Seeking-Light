@@ -5,6 +5,7 @@ using UnityEngine;
 public class IKTargetManagerNew : MonoBehaviour
 {
     [SerializeField] private Transform IK_Target;
+    [SerializeField] private Transform homeTransform;
 
     [SerializeField] private float rayDistance;
     [SerializeField] private float threshold;
@@ -20,6 +21,7 @@ public class IKTargetManagerNew : MonoBehaviour
     [SerializeField] private Transform resetPosFront;
 
     [SerializeField] private Vector2 currentPos;
+    [SerializeField] private Vector2 centerPos;
     [SerializeField] private Vector2 newPoint;
     private Vector2 dir;
 
@@ -34,6 +36,10 @@ public class IKTargetManagerNew : MonoBehaviour
     private bool newPosFound = false;
     [SerializeField] private bool flipDir = false;
     [SerializeField] private bool facingDown = false;
+
+
+    [SerializeField] private bool Moving = false;
+    [SerializeField] private float heightOffset;
 
     // Start is called before the first frame update
     void Start()
@@ -90,11 +96,10 @@ public class IKTargetManagerNew : MonoBehaviour
         newPoint = findNextPoint(); // sets the new point by constanstly casting a ray in this function
 
         float distanceToNextPoint = Vector2.Distance(IK_Target.position, newPoint);
-        Debug.Log(distanceToNextPoint);
         if (distanceToNextPoint >= threshold) //Checks distance between the IK target and the new point 
         {
             Debug.Log("Should move now");
-            MoveToReset(); //If the threshold has been crossed, begin moving process
+            MoveToReset();
             currentPos = newPoint; //the new point now becomes the current point the IK should be at
         }
         else
@@ -114,10 +119,10 @@ public class IKTargetManagerNew : MonoBehaviour
     {
         RaycastHit2D hit = Physics2D.Raycast(rayPoint.position, dir, rayDistance, whatIsWalkable); //Starts finding the next postion to move to
 
-        if(hit.point == Vector2.zero)
-        {
-            transform.parent.position = transform.parent.position += Vector3.down * 30 * Time.deltaTime; //If the ray is not hitting a suitable surface, push the parent object down
-        }
+        //if(hit.point == Vector2.zero)
+        //{
+        //    transform.parent.position = transform.parent.position += Vector3.down * 30 * Time.deltaTime; //If the ray is not hitting a suitable surface, push the parent object down
+        //}
 
         return hit.point;
     }
@@ -139,19 +144,72 @@ public class IKTargetManagerNew : MonoBehaviour
         }       
     }
 
+    //IEnumerator MoveToPointCoroutine(Vector3 endPoint,  float moveTime)
+    //{
+    //    // Indicate we're moving
+    //    Moving = true;
+
+    //    // Store the initial conditions for interpolation
+    //    Vector3 startPoint = currentPos;
+
+    //    // Apply the height offset
+    //    endPoint += homeTransform.up * heightOffset;
+
+    //    // We want to pass through the center point
+    //    Vector3 centerPoint = (startPoint + endPoint) / 2;
+    //    // But also lift off, so we move it up arbitrarily by half the step distance
+    //    centerPoint += homeTransform.up * Vector3.Distance(startPoint, endPoint) / 2f;
+
+    //    // Time since step started
+    //    float timeElapsed = 0;
+
+    //    // Here we use a do-while loop so normalized time goes past 1.0 on the last iteration,
+    //    // placing us at the end position before exiting.
+    //    do
+    //    {
+    //        timeElapsed += Time.deltaTime;
+
+    //        // Get the normalized time
+    //        float normalizedTime = timeElapsed / moveTime;
+
+    //        // Apply easing
+    //        normalizedTime = Easing.EaseInOutCubic(normalizedTime);
+
+    //        // Note: Unity's Lerp and Slerp functions are clamped at 0.0 and 1.0, 
+    //        // so even if our normalizedTime goes past 1.0, we won't overshoot the end
+
+    //        // Quadratic bezier curve
+            
+    //        IK_Target.position =
+    //            Vector3.Lerp(
+    //                Vector3.Lerp(startPoint, centerPoint, normalizedTime),
+    //                Vector3.Lerp(centerPoint, endPoint, normalizedTime),
+    //                normalizedTime
+    //            );
+
+    //        // Wait for one frame
+    //        yield return null;
+    //    }
+    //    while (timeElapsed < moveTime);
+
+    //    Moving = false;
+    //}
+
     private void MoveToReset()
     {
-        IK_Target.position = Vector2.Lerp(IK_Target.position, resetPos.position, resetSpeed * Time.deltaTime); //Starts to move leg up to the reset position
-        float distance = Vector2.Distance(IK_Target.position, resetPos.position);
-        if(distance <= .05f)
-        {
-            resetHit = true; //Once in range, the bool registers as true
-        }
+        centerPos = new Vector2(((newPoint.x + currentPos.x) / 2), (centerPos.y + resetPos.position.y) / 2);
 
-        if(resetHit == true) //And starts calling the MoveIK function whichs moves the leg to the newPoint given by the findNextPoint function called in the update method
-        {
-            MoveIK(newPoint);
-        }
+        IK_Target.position = Vector2.Lerp(Vector2.Lerp(IK_Target.position, centerPos, resetSpeed * Time.deltaTime), Vector2.Lerp(centerPos, newPoint, resetSpeed * Time.deltaTime), speed); //Starts to move leg up to the reset position
+        //float distance = Vector2.Distance(IK_Target.position, resetPos.position);
+        //if(distance <= .05f)
+        //{
+        //    resetHit = true; //Once in range, the bool registers as true
+        //}
+
+        //if(resetHit == true) //And starts calling the MoveIK function whichs moves the leg to the newPoint given by the findNextPoint function called in the update method
+        //{
+        //    MoveIK(newPoint);
+        //}
     }
 
     private void MoveIK(Vector2 _newPos)
@@ -164,11 +222,11 @@ public class IKTargetManagerNew : MonoBehaviour
         }
     }
 
-    void OnDrawGizmos()
-    {
-        Gizmos.DrawRay(rayPoint.position, dir * rayDistance);
-        Gizmos.DrawLine(IK_Target.position, newPoint);
+    //void OnDrawGizmos()
+    //{
+    //    Gizmos.DrawRay(rayPoint.position, dir * rayDistance);
+    //    Gizmos.DrawLine(IK_Target.position, newPoint);
 
-        Gizmos.DrawSphere(newPoint, 1f);
-    }
+    //    Gizmos.DrawSphere(newPoint, 1f);
+    //}
 }

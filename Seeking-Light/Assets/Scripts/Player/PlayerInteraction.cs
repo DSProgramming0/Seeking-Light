@@ -13,6 +13,7 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private float rayDist = 1f;
 
     [SerializeField] private GameObject moveableObj; //The current moveableObject that the player has selected
+    [SerializeField] private Interact interactObj;
     private Vector2 dir;
 
     [Header("Player Flashlight")]
@@ -119,12 +120,35 @@ public class PlayerInteraction : MonoBehaviour
             }                      
         }
 
-        if( hit.collider != null && hit.collider.tag == "InteractableObj" && Input.GetButton("Interact")) //If player is hitting an object with the interactableObj tag and presses E
+        if( hit.collider != null && hit.collider.tag == "InteractableObj") //If player is hitting an object with the interactableObj tag and presses E
         {
-            hit.collider.GetComponent<Interact>().startInteraction(); //Call the interaction method on whatever type of interactable object it is
+            interactObj = hit.collider.GetComponent<Interact>();
+
+            if(interactObj.Interacted == false)
+            {
+                PromptManager.instance.spawnPrompt(GameAssets.instance.interactKeyPrompt, interactObj.transform.position, new Vector2(0, 10));
+
+                if (Input.GetButtonDown("Interact"))
+                {
+                    Debug.Log("Interacting");
+                    interactObj.startInteraction(); //Call the interaction method on whatever type of interactable object it is
+                    PromptManager.instance.destroyPrompt();
+                }
+            }
+            else //If this interaction has already been used
+            {
+                PromptManager.instance.destroyPrompt();
+            }
+        }
+        else //If the player is no longer looking at object
+        {
+            if(PromptManager.instance.SpawnedPrompt != null)
+            {
+                PromptManager.instance.destroyPrompt();
+            }
         }
 
-        if(PlayerInfo.instance.PlayerHasFlashLight == true)
+        if (PlayerInfo.instance.PlayerHasFlashLight == true)
         {
             if (Input.GetButtonDown("ToggleFlashlight")) 
             {

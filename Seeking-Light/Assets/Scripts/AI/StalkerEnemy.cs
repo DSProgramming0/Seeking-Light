@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class StalkerEnemy : MonoBehaviour
 {
-    [SerializeField] private AnimHook thisAnim;
+    //[SerializeField] private AnimHook thisAnim;
     [SerializeField] private Transform target;
-    [SerializeField] private Rigidbody2D thisRB;
+    //[SerializeField] private Rigidbody2D thisRB;
     [SerializeField] private stalkerState currentState;
-    [SerializeField] private AudioSource thisAudioSource;
-    [SerializeField] private ParticleSystem enemyParticles;
+    //[SerializeField] private AudioSource thisAudioSource;
+    //[SerializeField] private ParticleSystem enemyParticles;
 
-    [Header("Componenets To Disable")]
-    [SerializeField] private List<SpriteRenderer> thisSprite;
-    [SerializeField] private CircleCollider2D thisCollider;  
+    //[Header("Componenets To Disable")]
+    //[SerializeField] private List<SpriteRenderer> thisSprite;
+    //[SerializeField] private CircleCollider2D thisCollider;  
 
     [Header("Current Values")]
     [SerializeField] private float currentHungerMultiplier;
@@ -33,6 +33,11 @@ public class StalkerEnemy : MonoBehaviour
 
 
     [Header("Movement")]
+    [SerializeField] private Transform rayPoint;
+    [SerializeField] private float rayDistance;
+    [SerializeField] private float liftAmount;
+    [SerializeField] private LayerMask whatIsGround;
+
     [SerializeField] private float speedFar;
     [SerializeField] private float midSpeed;
     [SerializeField] private float closeSpeed;
@@ -58,9 +63,10 @@ public class StalkerEnemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        float yOffset = CheckForGround();
         hungerMeterGain();
 
-        SoundManager.PlayStaticSound(thisAudioSource, currentSound);
+       // SoundManager.PlayStaticSound(thisAudioSource, currentSound);
 
         switch (currentState)
         {
@@ -68,18 +74,18 @@ public class StalkerEnemy : MonoBehaviour
                 currentOffset = offsetFar;
                 currentSpeed = closeSpeed;
                 currentHungerMultiplier = 0;
-                thisAudioSource.enabled = false;
+                //thisAudioSource.enabled = false;
                 hungerMeter = 0;
-                hideEnemy(true);
+                //hideEnemy(true);
                 break;
             case stalkerState.FAR:
                 currentOffset = offsetFar;
                 currentSpeed = speedFar;
                 currentHungerMultiplier = hungerMultiplerFar;
-                thisAudioSource.enabled = true;
+               // thisAudioSource.enabled = true;
                 currentSound = SoundManager.Sound.Demon_Stalk_1;
                 currentSoundPlaying = false;
-                hideEnemy(false);              
+                //hideEnemy(false);              
                 break;
             case stalkerState.MID:
                 currentOffset = offsetMid;
@@ -99,8 +105,24 @@ public class StalkerEnemy : MonoBehaviour
                 break;
         }
 
-        thisRB.MovePosition(Vector3.Slerp(transform.position, target.position + currentOffset, currentSpeed * Time.deltaTime));
-        thisAnim.setStalkerState(true);
+        transform.position = new Vector2(Mathf.Lerp(transform.position.x, target.position.x + currentOffset.x, currentSpeed * Time.deltaTime), Mathf.Lerp(transform.position.y, yOffset, currentSpeed + Time.deltaTime));
+            }
+
+    private float CheckForGround()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(rayPoint.position, Vector2.down * rayDistance, whatIsGround);
+
+        if(hit)
+        {
+            Debug.Log("Is Hitting");
+            float offsetY = hit.point.y + liftAmount;
+
+            return offsetY;
+        }
+        else
+        {
+            return 10f;
+        }
     }
 
     public void hungerMeterGain()
@@ -109,12 +131,12 @@ public class StalkerEnemy : MonoBehaviour
         {
             hungerMeter = hungerMeter += currentHungerMultiplier * Time.deltaTime;
 
-            var emission = enemyParticles.emission;
-            emission.rateOverTime = 0;
-            if (enemyParticles.particleCount == 0)
-            {
-                enemyParticles.Pause();
-            }
+            //var emission = enemyParticles.emission;
+            //emission.rateOverTime = 0;
+            //if (enemyParticles.particleCount == 0)
+            //{
+            //    enemyParticles.Pause();
+            //}
         }
         else
         {
@@ -122,9 +144,9 @@ public class StalkerEnemy : MonoBehaviour
 
             currentSound = SoundManager.Sound.Demon_Recoil_1;
 
-            var emission = enemyParticles.emission;
-            emission.rateOverTime = 25;
-            enemyParticles.Play();
+            //var emission = enemyParticles.emission;
+            //emission.rateOverTime = 25;
+            //enemyParticles.Play();
 
             if (hungerMeter <= 0)
             {
@@ -164,30 +186,29 @@ public class StalkerEnemy : MonoBehaviour
         }
         else if(currentState == stalkerState.CLOSE)
         {
-            thisAnim.triggerStalkerAttack();
             target.GetComponent<PlayerDeath>().Death();
         }
     }
 
-    public void hideEnemy(bool _shouldHide)
-    {
-        if (_shouldHide)
-        {
-            foreach(SpriteRenderer sprite in thisSprite)
-            {
-                sprite.enabled = false;
-            }
-            thisCollider.enabled = false;
-        }
-        else
-        {
-            foreach (SpriteRenderer sprite in thisSprite)
-            {
-                sprite.enabled = true;
-            }
-            thisCollider.enabled = true;
-        }
-    }
+    //public void hideEnemy(bool _shouldHide)
+    //{
+    //    if (_shouldHide)
+    //    {
+    //        foreach(SpriteRenderer sprite in thisSprite)
+    //        {
+    //            sprite.enabled = false;
+    //        }
+    //        thisCollider.enabled = false;
+    //    }
+    //    else
+    //    {
+    //        foreach (SpriteRenderer sprite in thisSprite)
+    //        {
+    //            sprite.enabled = true;
+    //        }
+    //        thisCollider.enabled = true;
+    //    }
+    //}
 
     private void resetEnemy()
     {
@@ -205,6 +226,11 @@ public class StalkerEnemy : MonoBehaviour
         FAR,
         MID,
         CLOSE
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawRay(rayPoint.position, Vector2.down * rayDistance);
     }
 }
 
