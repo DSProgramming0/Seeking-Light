@@ -24,6 +24,8 @@ public class GameAssets : MonoBehaviour
 
     [Header("AudioSource")]
     public AudioSource mainAudioSource;
+    public Transform cryingChildAudioSource;
+
     [Header("GameObjects")]
     public GameObject interactKeyPrompt;
 

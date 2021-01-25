@@ -28,7 +28,8 @@ public class SwapAmbientSound : MonoBehaviour
                         SoundManager.PlayStaticSound(GameAssets.instance.mainAudioSource, SoundManager.Sound.KidsPlaying);
                         break;
                     case AmbientSoundType.KidCrying:
-                        SoundManager.PlayStaticSound(GameAssets.instance.mainAudioSource, SoundManager.Sound.KidsCrying);
+                        SoundManager.Play3DSound(SoundManager.Sound.KidsCrying, true, false, 0f, .8f, 260f, GameAssets.instance.cryingChildAudioSource.position);
+                        SoundManager.PlayStaticSound(GameAssets.instance.mainAudioSource, SoundManager.Sound.Ambience1);
 
                         break;
                     default:

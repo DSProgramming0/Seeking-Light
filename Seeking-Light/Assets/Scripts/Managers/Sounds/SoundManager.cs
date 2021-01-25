@@ -77,7 +77,7 @@ public static class SoundManager
         }        
     }
 
-    public static AudioSource Play3DSound(Sound clipToPlay, bool shouldLoop, bool shouldDestroy, float destroyDelayTime, float _volume, float _spatialBlend, float _range, Vector3 position)
+    public static AudioSource Play3DSound(Sound clipToPlay, bool shouldLoop, bool shouldDestroy, float destroyDelayTime, float _volume, float _range, Vector3 position)
     {
         if (canPlaySound(clipToPlay))
         {

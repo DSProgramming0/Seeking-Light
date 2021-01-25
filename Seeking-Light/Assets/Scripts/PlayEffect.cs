@@ -19,7 +19,7 @@ public class PlayEffect : MonoBehaviour
                 switch (thisEffect)
                 {
                     case TypeOfEffect.HeavyObject:
-                        SoundManager.Play3DSound(SoundManager.Sound.MetallicCrash1, false, true, 4f, .5f, 1f, 90f, transform.position);
+                        SoundManager.Play3DSound(SoundManager.Sound.MetallicCrash1, false, true, 4f, .5f, 90f, transform.position);
                         break;
                     default:
                         break;
