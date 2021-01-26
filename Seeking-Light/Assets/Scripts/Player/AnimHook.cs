@@ -107,4 +107,10 @@ public class AnimHook : MonoBehaviour
         thisAnimator.SetTrigger("EndTalking");
         thisAnimator.SetBool("IsTalking", false);
     }
+
+    public void startBarnaclePull()
+    {
+        thisAnimator.enabled = true;
+        thisAnimator.SetTrigger("PullUp");
+    }
 }

@@ -43,7 +43,6 @@ public class PlayerStates : MonoBehaviour
         {
             if(currentConverstaionState == PlayerConverstaionStates.NOT_IN_CONVERSATION)
             {
-                PlayerInfo.instance.PlayerHasControl = true;
                 currentCompanionControlState = CompanionControlStates.PLAYER_HAS_CONTROL;
 
             }

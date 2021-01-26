@@ -6,8 +6,10 @@ public class PlayerDeath : MonoBehaviour
 {
     [SerializeField] private AnimHook thisAnim;
     [SerializeField] private PlayerInteraction playerInteractions;
+    [SerializeField] private ParticleSystemManager particles;
 
     [Header("Original Body")]
+    [SerializeField] private GameObject checksGO;
     [SerializeField] private List<SpriteRenderer> bodyPartSprites;
     [SerializeField] private List<Behaviour> componentsToDisable;
     [SerializeField] private List<Collider2D> collidersToDisable;
@@ -45,6 +47,11 @@ public class PlayerDeath : MonoBehaviour
         //}
     }
 
+    public void caughtByBarnacle()
+    {
+        PlayerInfo.instance.PlayerHasControl = false;
+    }
+
     public void Death()
     {
         thisAnim.resetPose(true); //Sets animator to an idle state (Prevents glitch where player would be stuck on last frame before death!)
@@ -58,8 +65,7 @@ public class PlayerDeath : MonoBehaviour
 
                 hasFlashlightDropped = true;
             }
-        }
-       
+        }       
 
         PlayerStates.instance.currentPlayerConditionState = PlayerConditionStates.DEAD; //Sets player state
 

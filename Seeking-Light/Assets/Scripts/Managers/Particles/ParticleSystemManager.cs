@@ -10,11 +10,16 @@ public class ParticleSystemManager : MonoBehaviour
     [SerializeField] private AudioSource rainSound;
     private bool soundPlaying = false;
 
-    [SerializeField] private Transform playerPos;
+    [SerializeField] private Transform target;
     [SerializeField] private float offsetX;
     [SerializeField] private float offsetY;
 
     [SerializeField] private float movementSmooth;
+
+    public void switchTarget(Transform _newtarget)
+    {
+        target = _newtarget;
+    }
    
     void Update()
     {
@@ -72,7 +77,7 @@ public class ParticleSystemManager : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        this.transform.position = new Vector2(Mathf.Lerp(transform.position.x, playerPos.position.x + offsetX, Time.fixedDeltaTime * movementSmooth), Mathf.Lerp(transform.position.y, playerPos.position.y + offsetY, Time.fixedDeltaTime * movementSmooth));
+        this.transform.position = new Vector2(Mathf.Lerp(transform.position.x, target.position.x + offsetX, Time.fixedDeltaTime * movementSmooth), Mathf.Lerp(transform.position.y, target.position.y + offsetY, Time.fixedDeltaTime * movementSmooth));
     }    
 }
 
